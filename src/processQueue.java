@@ -45,6 +45,7 @@ public class processQueue {
         envConfig.setAllowCreate(false);
         envConfig.setInitializeCache(true);
         envConfig.setCacheSize(20971520);
+        envConfig.setInitializeLocking(true);
 
         env = new Environment(dbEnvDir, envConfig);
 

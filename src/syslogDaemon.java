@@ -42,6 +42,8 @@ public class syslogDaemon {
         envConfig.setAllowCreate(true);
         envConfig.setInitializeCache(true);
         envConfig.setCacheSize(20971520);
+        envConfig.setInitializeLocking(true);
+
         final Environment env = new Environment(dbEnvDir, envConfig);
 
         DatabaseConfig config = new DatabaseConfig();
