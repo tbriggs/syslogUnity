@@ -32,7 +32,7 @@ public class syslogDaemon {
     }
 
     private void getEntries() throws Exception {
-        final File dbEnvDir = new File("queueDB/");
+        final File dbEnvDir = new File("/var/lib/syslogUnity/queueDB/");
         int BUFFER_SIZE = 1024;
 
         DatagramSocket syslog = new DatagramSocket(514);
@@ -53,7 +53,8 @@ public class syslogDaemon {
         final Cursor cursor;
         cursor = queue.openCursor(null, null);
         LongEntry lastRecNoDbt = new LongEntry();
-        cursor.getLast(lastRecNoDbt, null, null);
+        DatabaseEntry throwaway = new DatabaseEntry();
+        cursor.getLast(lastRecNoDbt, throwaway, null);
         long currentRecNo = lastRecNoDbt.getLong() + 1;
         cursor.close();
 
