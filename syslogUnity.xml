@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="syslogunity" default="all">
+  
+  
+  <property file="syslogUnity.properties"/>
+  <!-- Uncomment the following property if no tests compilation is needed -->
+  <!-- 
+  <property name="skip.tests" value="true"/>
+   -->
+  
+  <!-- Compiler options -->
+  
+  <property name="compiler.debug" value="on"/>
+  <property name="compiler.generate.no.warnings" value="off"/>
+  <property name="compiler.args" value=""/>
+  <property name="compiler.max.memory" value="128m"/>
+  <patternset id="ignored.files">
+    <exclude name="**/CVS/**"/>
+    <exclude name="**/SCCS/**"/>
+    <exclude name="**/RCS/**"/>
+    <exclude name="**/rcs/**"/>
+    <exclude name="**/.DS_Store/**"/>
+    <exclude name="**/.svn/**"/>
+    <exclude name="**/.pyc/**"/>
+    <exclude name="**/.pyo/**"/>
+    <exclude name="**/*.pyc/**"/>
+    <exclude name="**/*.pyo/**"/>
+    <exclude name="**/.git/**"/>
+    <exclude name="**/*.hprof/**"/>
+    <exclude name="**/_svn/**"/>
+    <exclude name="**/.hg/**"/>
+    <exclude name="**/*.lib/**"/>
+    <exclude name="**/*~/**"/>
+  </patternset>
+  <patternset id="library.patterns">
+    <include name="*.zip"/>
+    <include name="*.war"/>
+    <include name="*.egg"/>
+    <include name="*.ear"/>
+    <include name="*.swc"/>
+    <include name="*.jar"/>
+  </patternset>
+  <patternset id="compiler.resources">
+    <include name="**/?*.properties"/>
+    <include name="**/?*.xml"/>
+    <include name="**/?*.gif"/>
+    <include name="**/?*.png"/>
+    <include name="**/?*.jpeg"/>
+    <include name="**/?*.jpg"/>
+    <include name="**/?*.html"/>
+    <include name="**/?*.dtd"/>
+    <include name="**/?*.tld"/>
+    <include name="**/?*.ftl"/>
+  </patternset>
+  
+  <!-- JDK definitions -->
+  
+  <property name="jdk.bin.1.6" value="${jdk.home.1.6}/bin"/>
+  <path id="jdk.classpath.1.6">
+    <fileset dir="${jdk.home.1.6}">
+      <include name="../../../../Support/Deploy.bundle/Contents/Resources/Java/deploy.jar"/>
+      <include name="lib/dt.jar"/>
+      <include name="../../../../Support/Deploy.bundle/Contents/Resources/Java/javaws.jar"/>
+      <include name="lib/jce.jar"/>
+      <include name="lib/jconsole.jar"/>
+      <include name="lib/management-agent.jar"/>
+      <include name="../../../../Support/Deploy.bundle/Contents/Resources/Java/plugin.jar"/>
+      <include name="lib/sa-jdi.jar"/>
+      <include name="../Classes/alt-rt.jar"/>
+      <include name="../Classes/charsets.jar"/>
+      <include name="../Classes/classes.jar"/>
+      <include name="../Classes/jsse.jar"/>
+      <include name="../Classes/ui.jar"/>
+      <include name="lib/ext/apple_provider.jar"/>
+      <include name="lib/ext/dnsns.jar"/>
+      <include name="lib/ext/localedata.jar"/>
+      <include name="lib/ext/sunjce_provider.jar"/>
+      <include name="lib/ext/sunpkcs11.jar"/>
+    </fileset>
+  </path>
+  
+  <property name="project.jdk.home" value="${jdk.home.1.6}"/>
+  <property name="project.jdk.bin" value="${jdk.bin.1.6}"/>
+  <property name="project.jdk.classpath" value="jdk.classpath.1.6"/>
+  
+  
+  <!-- Project Libraries -->
+  
+  <path id="library.berkeley_db.classpath">
+    <fileset dir="${basedir}/je-4.1.7/lib">
+      <patternset refid="library.patterns"/>
+    </fileset>
+  </path>
+  
+  <path id="library.lucene.classpath">
+    <fileset dir="${basedir}/lucene-3.0.3">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/analyzers/common">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/analyzers/smartcn">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/ant">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/benchmark">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/collation">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/db/bdb">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/db/bdb-je">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/fast-vector-highlighter">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/highlighter">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/instantiated">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/lucli">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/memory">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/misc">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/queries">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/queryparser">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/regex">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/remote">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/snowball">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/spatial">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/spellchecker">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/surround">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/swing">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/wikipedia">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/wordnet">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene-3.0.3/contrib/xml-query-parser">
+      <patternset refid="library.patterns"/>
+    </fileset>
+  </path>
+  
+  <!-- Modules -->
+  
+  
+  <!-- Module syslogUnity -->
+  
+  <dirname property="module.syslogunity.basedir" file="${ant.file}"/>
+  
+  
+  <property name="module.jdk.home.syslogunity" value="${jdk.home.1.6}"/>
+  <property name="module.jdk.bin.syslogunity" value="${jdk.bin.1.6}"/>
+  <property name="module.jdk.classpath.syslogunity" value="jdk.classpath.1.6"/>
+  
+  <property name="compiler.args.syslogunity" value="${compiler.args}"/>
+  
+  <property name="syslogunity.output.dir" value="${module.syslogunity.basedir}/out/production/syslogUnity"/>
+  <property name="syslogunity.testoutput.dir" value="${module.syslogunity.basedir}/out/test/syslogUnity"/>
+  
+  <path id="syslogunity.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="syslogunity.module.production.classpath">
+    <path refid="${module.jdk.classpath.syslogunity}"/>
+    <path refid="library.berkeley_db.classpath"/>
+    <path refid="library.lucene.classpath"/>
+  </path>
+  
+  <path id="syslogunity.runtime.production.module.classpath">
+    <pathelement location="${syslogunity.output.dir}"/>
+    <path refid="library.berkeley_db.classpath"/>
+    <path refid="library.lucene.classpath"/>
+  </path>
+  
+  <path id="syslogunity.module.classpath">
+    <path refid="${module.jdk.classpath.syslogunity}"/>
+    <pathelement location="${syslogunity.output.dir}"/>
+    <path refid="library.berkeley_db.classpath"/>
+    <path refid="library.lucene.classpath"/>
+  </path>
+  
+  <path id="syslogunity.runtime.module.classpath">
+    <pathelement location="${syslogunity.testoutput.dir}"/>
+    <pathelement location="${syslogunity.output.dir}"/>
+    <path refid="library.berkeley_db.classpath"/>
+    <path refid="library.lucene.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.syslogunity">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.syslogunity">
+    <patternset refid="excluded.from.module.syslogunity"/>
+  </patternset>
+  
+  <path id="syslogunity.module.sourcepath">
+    <dirset dir="${module.syslogunity.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.syslogunity" depends="compile.module.syslogunity.production,compile.module.syslogunity.tests" description="Compile module syslogUnity"/>
+  
+  <target name="compile.module.syslogunity.production" description="Compile module syslogUnity; production classes">
+    <mkdir dir="${syslogunity.output.dir}"/>
+    <javac destdir="${syslogunity.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.syslogunity}/javac">
+      <compilerarg line="${compiler.args.syslogunity}"/>
+      <bootclasspath refid="syslogunity.module.bootclasspath"/>
+      <classpath refid="syslogunity.module.production.classpath"/>
+      <src refid="syslogunity.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.syslogunity"/>
+    </javac>
+    
+    <copy todir="${syslogunity.output.dir}">
+      <fileset dir="${module.syslogunity.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.syslogunity.tests" depends="compile.module.syslogunity.production" description="compile module syslogUnity; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.syslogunity" description="cleanup module">
+    <delete dir="${syslogunity.output.dir}"/>
+    <delete dir="${syslogunity.testoutput.dir}"/>
+  </target>
+  
+  <target name="init" description="Build initialization">
+    <!-- Perform any build initialization in this target -->
+  </target>
+  
+  <target name="clean" depends="clean.module.syslogunity" description="cleanup all"/>
+  
+  <target name="build.modules" depends="init, clean, compile.module.syslogunity" description="build all modules"/>
+  
+  <target name="all" depends="build.modules" description="build all"/>
+</project>
