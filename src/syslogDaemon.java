@@ -51,10 +51,13 @@ public class syslogDaemon {
         config.setPageSize(4096);
         final Database queue = env.openDatabase(null, "logQueue.db", "logQueue", config);
 
+        DatabaseEntry tempkey = new DatabaseEntry();
+        DatabaseEntry tempdata = new DatabaseEntry();
         CursorConfig curConfig = new CursorConfig();
         curConfig.setReadUncommitted(true);
         curConfig.setWriteCursor(true);
         final Cursor cursor = queue.openCursor(null, curConfig);
+        cursor.getLast(tempkey,tempdata,null);
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
@@ -101,7 +104,7 @@ public class syslogDaemon {
         ddbt.setSize(d.length);
 
         try {
-            cursor.put(kdbt, ddbt);
+            cursor.putNoOverwrite(kdbt, ddbt);
         } catch (Exception dbe) {
             System.out.print("Couldn't add record to database\n");
         }
