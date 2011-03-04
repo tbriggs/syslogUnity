@@ -51,6 +51,9 @@ public class processQueue {
 
         LongEntry kdbt = new LongEntry();
         StringEntry ddbt = new StringEntry();
+
+        CursorConfig curConfig = new CursorConfig();
+        curConfig.setReadUncommitted(true);
         final Cursor cursor;
         cursor = queue.openCursor(null, null);
         OperationStatus check;
