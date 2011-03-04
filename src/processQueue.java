@@ -38,6 +38,7 @@ public class processQueue {
         envConfig.setTransactional(true);
         envConfig.setAllowCreate(true);
         envConfig.setSharedCache(true);
+        envConfig.setReadOnly(true);
         envConfig.setCacheSize(20971520);
 
         final Environment env = new Environment(dbEnvDir, envConfig);
