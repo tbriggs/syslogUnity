@@ -1,4 +1,4 @@
-import com.sleepycat.je.*;
+import com.sleepycat.db.*;
 
 
 import java.net.DatagramSocket;
@@ -39,28 +39,30 @@ public class syslogDaemon {
         DatagramPacket logEntry = new DatagramPacket(new byte[BUFFER_SIZE], BUFFER_SIZE);
 
         EnvironmentConfig envConfig = new EnvironmentConfig();
-        envConfig.setTransactional(true);
-        envConfig.setAllowCreate(true);
-        envConfig.setCacheSize(20971520);
-        envConfig.setSharedCache(true);
-
+    envConfig.setTransactional(false);
+    envConfig.setAllowCreate(true);
+    envConfig.setCacheSize(20971520);
+    envConfig.setInitializeCache(true);
+        envConfig.setInitializeCDB(true);
+        envConfig.setInitializeLocking(true);
         final Environment env = new Environment(dbEnvDir, envConfig);
 
         DatabaseConfig config = new DatabaseConfig();
-        config.setAllowCreate(true);
-        final Database queue = env.openDatabase(null, "logQueue", config);
+    config.setType(DatabaseType.RECNO);
+    config.setReadUncommitted(true);
+    config.setAllowCreate(true);
+    config.setPageSize(4096);
+        final Database queue = env.openDatabase(null, "logQueue.db", "logQueue", config);
 
-        final Cursor cursor;
-        cursor = queue.openCursor(null, null);
-        LongEntry lastRecNoDbt = new LongEntry(0);
-        DatabaseEntry throwaway = new DatabaseEntry();
-        cursor.getLast(lastRecNoDbt, throwaway, null);
-        long currentRecNo = lastRecNoDbt.getLong() + 1;
-        cursor.close();
+        CursorConfig curConfig = new CursorConfig();
+        curConfig.setReadUncommitted(true);
+        curConfig.setWriteCursor(true);
+        final Cursor cursor = queue.openCursor(null, curConfig);
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 try {
+                    cursor.close();
                     queue.close();
                     env.close();
                     System.out.print("Closed DB Gracefully...\n");
@@ -74,12 +76,11 @@ public class syslogDaemon {
             syslog.receive(logEntry);
             InetAddress logHost = logEntry.getAddress();
             String logLine = new String(logEntry.getData(), 0, logEntry.getLength());
-            doStuff(logLine, logHost, queue, currentRecNo);
-            currentRecNo++;
+            doStuff(logLine, logHost, cursor);
         }
     }
 
-    void doStuff(String logLine, InetAddress logHost, Database queue, long currentRecNo) {
+    void doStuff(String logLine, InetAddress logHost, Cursor cursor) {
         Date logDate = new Date();
         String logPriority = "";
         int i;
@@ -94,7 +95,7 @@ public class syslogDaemon {
                 concat(logHost.getHostAddress()).concat("##FD##").
                 concat(logData);
 
-        byte[] k = ByteBuffer.allocate(8).putLong(currentRecNo).array();
+        byte[] k = new byte[8];
         byte[] d = insertRecord.getBytes();
 
         DatabaseEntry kdbt = new DatabaseEntry(k);
@@ -103,7 +104,7 @@ public class syslogDaemon {
         ddbt.setSize(d.length);
 
         try {
-            queue.put(null, kdbt, ddbt);
+            cursor.put(kdbt, ddbt);
         } catch (Exception dbe) {
             System.out.print("Couldn't add record to database\n");
         }

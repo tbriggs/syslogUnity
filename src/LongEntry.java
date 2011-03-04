@@ -1,4 +1,4 @@
-import com.sleepycat.je.DatabaseEntry;
+import com.sleepycat.db.DatabaseEntry;
 
 import java.nio.ByteBuffer;
 

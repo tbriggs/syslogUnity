@@ -2,12 +2,13 @@ import java.io.File;
 import java.util.regex.Pattern;
 import java.lang.Thread;
 
-import com.sleepycat.je.*;
+import com.sleepycat.db.*;
 
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.analysis.miscellaneous.PatternAnalyzer;
 import org.apache.lucene.util.Version;
 import org.apache.lucene.store.FSDirectory;
+import sun.awt.Symbol;
 
 
 /*
@@ -42,25 +43,31 @@ public class processQueue {
         final File INDEX_DIR = new File("indexDB/");
 
         EnvironmentConfig envConfig = new EnvironmentConfig();
-        envConfig.setTransactional(true);
-        envConfig.setAllowCreate(true);
-        envConfig.setSharedCache(true);
-        envConfig.setReadOnly(true);
-        envConfig.setCacheSize(20971520);
+    envConfig.setTransactional(false);
+    envConfig.setAllowCreate(false);
+    envConfig.setCacheSize(20971520);
+    envConfig.setInitializeCache(true);
+        envConfig.setInitializeCDB(true);
+        envConfig.setInitializeLocking(true);
+    envConfig.setInitializeCache(true);
+
 
         env = new Environment(dbEnvDir, envConfig);
 
         DatabaseConfig config = new DatabaseConfig();
-        config.setAllowCreate(false);
-        config.setReadOnly(true);
+    config.setType(DatabaseType.RECNO);
+    config.setReadUncommitted(true);
+    config.setAllowCreate(false);
+    config.setPageSize(4096);
 
-        queue = env.openDatabase(null, "logQueue", config);
+        queue = env.openDatabase(null, "logQueue.db", "logQueue", config);
 
         LongEntry kdbt = new LongEntry();
         StringEntry ddbt = new StringEntry();
 
         CursorConfig curConfig = new CursorConfig();
         curConfig.setReadUncommitted(true);
+        curConfig.setWriteCursor(true);
         cursor = queue.openCursor(null, curConfig);
         OperationStatus check;
 
@@ -81,34 +88,23 @@ public class processQueue {
             }
         });
 
-        check = cursor.getFirst(kdbt, ddbt, null);
+            check = cursor.getFirst(kdbt, ddbt, null);
+
         if (check == OperationStatus.SUCCESS) {
             indexLine(kdbt, ddbt);
         } else {
             System.out.print("Error on first read: " + check.toString() + "\n");
         }
 
-        long cursorPos = kdbt.getLong();
         while (true) {
-            check = cursor.getNext(kdbt, ddbt, null);
+
+            check = cursor.getNext(kdbt, ddbt,null);
+
             if (check == OperationStatus.SUCCESS) {
                 indexLine(kdbt, ddbt);
-                cursorPos = kdbt.getLong();
                 //System.out.print("key: " + kdbt.getRecordNumber() + " data: " + ddbt.getString() + "\n");
             } else if (check == OperationStatus.NOTFOUND) {
-                Thread.sleep(10);
-                do {
-                  cursor.close();
-                  queue.close();
-                  env.close();
-                  env = new Environment(dbEnvDir, envConfig);
-                  queue = env.openDatabase(null, "logQueue", config);
-                  cursor = queue.openCursor(null, curConfig);
-                  kdbt.setLong(cursorPos+1);
-                } while (cursor.getSearchKey(kdbt,ddbt,null) != OperationStatus.SUCCESS);
 
-                indexLine(kdbt, ddbt);
-                cursorPos = kdbt.getLong();
             }
         }
 

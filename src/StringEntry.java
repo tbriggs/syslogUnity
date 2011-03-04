@@ -1,4 +1,4 @@
-import com.sleepycat.je.DatabaseEntry;
+import com.sleepycat.db.DatabaseEntry;
 
 /*
  * This file is part of syslogUnity.
