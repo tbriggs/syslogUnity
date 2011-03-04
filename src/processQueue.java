@@ -43,22 +43,22 @@ public class processQueue {
         final File INDEX_DIR = new File("indexDB/");
 
         EnvironmentConfig envConfig = new EnvironmentConfig();
-    envConfig.setTransactional(false);
-    envConfig.setAllowCreate(false);
-    envConfig.setCacheSize(20971520);
-    envConfig.setInitializeCache(true);
+        envConfig.setTransactional(false);
+        envConfig.setAllowCreate(false);
+        envConfig.setCacheSize(20971520);
+        envConfig.setInitializeCache(true);
         envConfig.setInitializeCDB(true);
         envConfig.setInitializeLocking(true);
-    envConfig.setInitializeCache(true);
+        envConfig.setInitializeCache(true);
 
 
         env = new Environment(dbEnvDir, envConfig);
 
         DatabaseConfig config = new DatabaseConfig();
-    config.setType(DatabaseType.RECNO);
-    config.setReadUncommitted(true);
-    config.setAllowCreate(false);
-    config.setPageSize(4096);
+        config.setType(DatabaseType.RECNO);
+        config.setReadUncommitted(true);
+        config.setAllowCreate(false);
+        config.setPageSize(4096);
 
         queue = env.openDatabase(null, "logQueue.db", "logQueue", config);
 
@@ -88,7 +88,7 @@ public class processQueue {
             }
         });
 
-            check = cursor.getFirst(kdbt, ddbt, null);
+        check = cursor.getFirst(kdbt, ddbt, null);
 
         if (check == OperationStatus.SUCCESS) {
             indexLine(kdbt, ddbt);
@@ -98,7 +98,7 @@ public class processQueue {
 
         while (true) {
 
-            check = cursor.getNext(kdbt, ddbt,null);
+            check = cursor.getNext(kdbt, ddbt, null);
 
             if (check == OperationStatus.SUCCESS) {
                 indexLine(kdbt, ddbt);

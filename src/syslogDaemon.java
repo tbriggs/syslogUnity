@@ -39,19 +39,19 @@ public class syslogDaemon {
         DatagramPacket logEntry = new DatagramPacket(new byte[BUFFER_SIZE], BUFFER_SIZE);
 
         EnvironmentConfig envConfig = new EnvironmentConfig();
-    envConfig.setTransactional(false);
-    envConfig.setAllowCreate(true);
-    envConfig.setCacheSize(20971520);
-    envConfig.setInitializeCache(true);
+        envConfig.setTransactional(false);
+        envConfig.setAllowCreate(true);
+        envConfig.setCacheSize(20971520);
+        envConfig.setInitializeCache(true);
         envConfig.setInitializeCDB(true);
         envConfig.setInitializeLocking(true);
         final Environment env = new Environment(dbEnvDir, envConfig);
 
         DatabaseConfig config = new DatabaseConfig();
-    config.setType(DatabaseType.RECNO);
-    config.setReadUncommitted(true);
-    config.setAllowCreate(true);
-    config.setPageSize(4096);
+        config.setType(DatabaseType.RECNO);
+        config.setReadUncommitted(true);
+        config.setAllowCreate(true);
+        config.setPageSize(4096);
         final Database queue = env.openDatabase(null, "logQueue.db", "logQueue", config);
 
         CursorConfig curConfig = new CursorConfig();
