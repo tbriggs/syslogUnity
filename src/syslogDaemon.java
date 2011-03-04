@@ -38,12 +38,10 @@ public class syslogDaemon {
         DatagramPacket logEntry = new DatagramPacket(new byte[BUFFER_SIZE], BUFFER_SIZE);
 
         EnvironmentConfig envConfig = new EnvironmentConfig();
-        envConfig.setTransactional(false);
         envConfig.setAllowCreate(true);
         envConfig.setCacheSize(20971520);
         envConfig.setInitializeCache(true);
         envConfig.setInitializeCDB(true);
-        envConfig.setInitializeLocking(true);
         final Environment env = new Environment(dbEnvDir, envConfig);
 
         DatabaseConfig config = new DatabaseConfig();

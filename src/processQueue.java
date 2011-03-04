@@ -41,14 +41,10 @@ public class processQueue {
         final File INDEX_DIR = new File("indexDB/");
 
         EnvironmentConfig envConfig = new EnvironmentConfig();
-        envConfig.setTransactional(false);
         envConfig.setAllowCreate(false);
         envConfig.setCacheSize(20971520);
         envConfig.setInitializeCache(true);
         envConfig.setInitializeCDB(true);
-        envConfig.setInitializeLocking(true);
-        envConfig.setInitializeCache(true);
-
 
         env = new Environment(dbEnvDir, envConfig);
 
