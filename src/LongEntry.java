@@ -33,7 +33,7 @@ class IntEntry extends DatabaseEntry {
         setSize(4);
     }
 
-    long getInt() {
+    int getInt() {
         return ByteBuffer.wrap(getData()).getInt();
     }
 }
