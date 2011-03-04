@@ -56,7 +56,7 @@ public class processQueue {
 
         queue = env.openDatabase(null, "logQueue.db", "logQueue", config);
 
-        LongEntry kdbt = new LongEntry();
+        IntEntry kdbt = new IntEntry();
         StringEntry ddbt = new StringEntry();
 
         CursorConfig curConfig = new CursorConfig();
@@ -106,9 +106,9 @@ public class processQueue {
 //    queue.close();
     }
 
-    private static void indexLine(LongEntry key, StringEntry record) {
+    private static void indexLine(IntEntry key, StringEntry record) {
         String[] arr = record.getString().split("##FD##");
-        System.out.print("key:" + key.getLong() + "\nDate:" + arr[0] + "\nPri:" + arr[1] + "\nIP:" + arr[2] + "\nData:\n" + arr[3] + "\n");
+        System.out.print("key:" + key.getInt() + "\nDate:" + arr[0] + "\nPri:" + arr[1] + "\nIP:" + arr[2] + "\nData:\n" + arr[3] + "\n");
 //    Document doc = new Document();
 //    doc.add
 //    writer.addDocument(doc);

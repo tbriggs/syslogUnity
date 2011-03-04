@@ -19,21 +19,21 @@ import java.nio.ByteBuffer;
  *     along with syslogUnity.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class LongEntry extends DatabaseEntry {
-    LongEntry() {
+class IntEntry extends DatabaseEntry {
+    IntEntry() {
     }
 
-    LongEntry(long value) {
-        setLong(value);
+    IntEntry(int value) {
+        setInt(value);
     }
 
-    void setLong(long value) {
-        byte[] data = ByteBuffer.allocate(8).putLong(value).array();
+    void setInt(int value) {
+        byte[] data = ByteBuffer.allocate(4).putInt(value).array();
         setData(data);
         setSize(4);
     }
 
-    long getLong() {
-        return ByteBuffer.wrap(getData()).getLong();
+    long getInt() {
+        return ByteBuffer.wrap(getData()).getInt();
     }
 }

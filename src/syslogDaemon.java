@@ -92,11 +92,11 @@ public class syslogDaemon {
                 concat(logHost.getHostAddress()).concat("##FD##").
                 concat(logData);
 
-        byte[] k = new byte[8];
+        byte[] k = new byte[4];
         byte[] d = insertRecord.getBytes();
 
         DatabaseEntry kdbt = new DatabaseEntry(k);
-        kdbt.setSize(8);
+        kdbt.setSize(4);
         DatabaseEntry ddbt = new DatabaseEntry(d, 0, d.length);
         ddbt.setSize(d.length);
 
