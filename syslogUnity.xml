@@ -87,7 +87,7 @@
   <!-- Project Libraries -->
   
   <path id="library.berkeley_db.classpath">
-    <pathelement location="${basedir}/../../../../usr/local/BerkeleyDB.5.1/lib/db.jar"/>
+    <pathelement location="${basedir}/db-5.1/db.jar"/>
   </path>
   
   <path id="library.lucene.classpath">
