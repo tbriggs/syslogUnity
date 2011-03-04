@@ -52,7 +52,7 @@ public class syslogDaemon {
 
         final Cursor cursor;
         cursor = queue.openCursor(null, null);
-        LongEntry lastRecNoDbt = new LongEntry();
+        LongEntry lastRecNoDbt = new LongEntry(0);
         DatabaseEntry throwaway = new DatabaseEntry();
         cursor.getLast(lastRecNoDbt, throwaway, null);
         long currentRecNo = lastRecNoDbt.getLong() + 1;
