@@ -40,9 +40,8 @@ public class syslogDaemon {
         EnvironmentConfig envConfig = new EnvironmentConfig();
         envConfig.setTransactional(true);
         envConfig.setAllowCreate(true);
-        envConfig.setInitializeCache(true);
         envConfig.setCacheSize(20971520);
-        envConfig.setInitializeLocking(true);
+        envConfig.setInitializeCache(true);
 
         final Environment env = new Environment(dbEnvDir, envConfig);
 
@@ -51,7 +50,7 @@ public class syslogDaemon {
         config.setReadUncommitted(true);
         config.setAllowCreate(true);
         config.setPageSize(4096);
-        final Database queue = env.openDatabase(null, "logQueue.db", "logQueue", config);
+        final Database queue = env.openDatabase(null, "logQueue.db", null, config);
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {

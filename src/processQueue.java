@@ -31,10 +31,6 @@ public class processQueue {
     private static IndexWriter writer = null;
     private static PatternAnalyzer analyzer = null;
 
-    private static Environment env;
-    private static Database queue;
-    private static Cursor cursor;
-
 
     public static void main(String[] args) throws Exception {
 
@@ -42,28 +38,24 @@ public class processQueue {
 
         EnvironmentConfig envConfig = new EnvironmentConfig();
         envConfig.setTransactional(true);
-        envConfig.setAllowCreate(false);
+        envConfig.setAllowCreate(true);
         envConfig.setInitializeCache(true);
         envConfig.setCacheSize(20971520);
-        envConfig.setInitializeLocking(true);
 
-        env = new Environment(dbEnvDir, envConfig);
+        final Environment env = new Environment(dbEnvDir, envConfig);
 
         DatabaseConfig config = new DatabaseConfig();
         config.setType(DatabaseType.RECNO);
-        config.setReadUncommitted(true);
         config.setAllowCreate(false);
+        config.setReadOnly(true);
         config.setPageSize(4096);
 
-        queue = env.openDatabase(null, "logQueue.db", "logQueue", config);
+        final Database queue = env.openDatabase(null, "logQueue.db", null, config);
 
         IntEntry kdbt = new IntEntry();
         StringEntry ddbt = new StringEntry();
-
-        CursorConfig curConfig = new CursorConfig();
-        curConfig.setReadUncommitted(true);
-        curConfig.setWriteCursor(true);
-        cursor = queue.openCursor(null, curConfig);
+        final Cursor cursor;
+        cursor = queue.openCursor(null, null);
         OperationStatus check;
 
         PatternAnalyzer analyzer = new PatternAnalyzer(Version.LUCENE_30, Pattern.compile("\\W+"), true, null);
