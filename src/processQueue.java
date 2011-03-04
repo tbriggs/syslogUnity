@@ -44,13 +44,14 @@ public class processQueue {
 
         final Environment env = new Environment(dbEnvDir, envConfig);
 
-        DatabaseConfig config = new DatabaseConfig();
-        config.setType(DatabaseType.RECNO);
-        config.setAllowCreate(false);
-        config.setReadOnly(true);
-        config.setPageSize(4096);
+        DatabaseConfig queueConfig = new DatabaseConfig();
+        queueConfig.setType(DatabaseType.QUEUE);
+        queueConfig.setAllowCreate(false);
+        queueConfig.setReadOnly(false);
+        queueConfig.setPageSize(4096);
+        queueConfig.setRecordLength(1024);
 
-        final Database queue = env.openDatabase(null, "logQueue.db", null, config);
+        final Database queue = env.openDatabase(null, "logQueue.db", null, queueConfig);
 
         IntEntry kdbt = new IntEntry();
         StringEntry ddbt = new StringEntry();

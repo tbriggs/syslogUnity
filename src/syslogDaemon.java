@@ -32,7 +32,7 @@ public class syslogDaemon {
 
     private void getEntries() throws Exception {
         final File dbEnvDir = new File("/var/lib/syslogUnity/queueDB/");
-        int BUFFER_SIZE = 1024;
+        int BUFFER_SIZE = 972;
 
         DatagramSocket syslog = new DatagramSocket(514);
         DatagramPacket logEntry = new DatagramPacket(new byte[BUFFER_SIZE], BUFFER_SIZE);
@@ -45,12 +45,13 @@ public class syslogDaemon {
 
         final Environment env = new Environment(dbEnvDir, envConfig);
 
-        DatabaseConfig config = new DatabaseConfig();
-        config.setType(DatabaseType.RECNO);
-        config.setReadUncommitted(true);
-        config.setAllowCreate(true);
-        config.setPageSize(4096);
-        final Database queue = env.openDatabase(null, "logQueue.db", null, config);
+        DatabaseConfig queueConfig = new DatabaseConfig();
+        queueConfig.setType(DatabaseType.QUEUE);
+        queueConfig.setReadUncommitted(true);
+        queueConfig.setAllowCreate(true);
+        queueConfig.setPageSize(4096);
+        queueConfig.setRecordLength(1024);
+        final Database queue = env.openDatabase(null, "logQueue.db", null, queueConfig);
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
@@ -92,8 +93,8 @@ public class syslogDaemon {
 
         DatabaseEntry kdbt = new DatabaseEntry(k);
         kdbt.setSize(4);
-        DatabaseEntry ddbt = new DatabaseEntry(d, 0, d.length);
-        ddbt.setSize(d.length);
+        DatabaseEntry ddbt = new DatabaseEntry(d, 0, 1024);
+        ddbt.setSize(1024);
 
         try {
             queue.append(null, kdbt, ddbt);
