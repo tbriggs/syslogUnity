@@ -93,7 +93,7 @@ public class syslogDaemon {
 
         DatabaseEntry kdbt = new DatabaseEntry(k);
         kdbt.setSize(4);
-        DatabaseEntry ddbt = new DatabaseEntry(d, 0, 1024);
+        DatabaseEntry ddbt = new DatabaseEntry(d);
         ddbt.setSize(1024);
 
         try {
