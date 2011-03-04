@@ -34,6 +34,6 @@ class IntEntry extends DatabaseEntry {
     }
 
     int getInt() {
-        return ByteBuffer.wrap(getData()).getInt();
+        return getRecordNumber();
     }
 }
