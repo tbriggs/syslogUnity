@@ -51,18 +51,9 @@ public class syslogDaemon {
         config.setPageSize(4096);
         final Database queue = env.openDatabase(null, "logQueue.db", "logQueue", config);
 
-        DatabaseEntry tempkey = new DatabaseEntry();
-        DatabaseEntry tempdata = new DatabaseEntry();
-        CursorConfig curConfig = new CursorConfig();
-        curConfig.setReadUncommitted(true);
-        curConfig.setWriteCursor(true);
-        final Cursor cursor = queue.openCursor(null, curConfig);
-        cursor.getLast(tempkey,tempdata,null);
-
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 try {
-                    cursor.close();
                     queue.close();
                     env.close();
                     System.out.print("Closed DB Gracefully...\n");
@@ -76,11 +67,11 @@ public class syslogDaemon {
             syslog.receive(logEntry);
             InetAddress logHost = logEntry.getAddress();
             String logLine = new String(logEntry.getData(), 0, logEntry.getLength());
-            doStuff(logLine, logHost, cursor);
+            doStuff(logLine, logHost, queue);
         }
     }
 
-    void doStuff(String logLine, InetAddress logHost, Cursor cursor) {
+    void doStuff(String logLine, InetAddress logHost, Database queue) {
         Date logDate = new Date();
         String logPriority = "";
         int i;
@@ -104,7 +95,7 @@ public class syslogDaemon {
         ddbt.setSize(d.length);
 
         try {
-            cursor.putNoOverwrite(kdbt, ddbt);
+            queue.append(null, kdbt, ddbt);
         } catch (Exception dbe) {
             System.out.print("Couldn't add record to database\n");
         }
