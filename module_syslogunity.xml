@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_syslogunity" default="compile.module.syslogunity">
+  <dirname property="module.syslogunity.basedir" file="${ant.file.module_syslogunity}"/>
+  
+  <property name="module.jdk.home.syslogunity" value="${jdk.home.1.6}"/>
+  <property name="module.jdk.bin.syslogunity" value="${jdk.bin.1.6}"/>
+  <property name="module.jdk.classpath.syslogunity" value="jdk.classpath.1.6"/>
+  
+  <property name="compiler.args.syslogunity" value="${compiler.args}"/>
+  
+  <property name="syslogunity.output.dir" value="${module.syslogunity.basedir}/out/production/syslogUnity"/>
+  <property name="syslogunity.testoutput.dir" value="${module.syslogunity.basedir}/out/test/syslogUnity"/>
+  
+  <path id="syslogunity.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="syslogunity.module.production.classpath">
+    <path refid="${module.jdk.classpath.syslogunity}"/>
+    <path refid="library.berkeley_db.classpath"/>
+    <path refid="library.lucene.classpath"/>
+  </path>
+  
+  <path id="syslogunity.runtime.production.module.classpath">
+    <pathelement location="${syslogunity.output.dir}"/>
+    <path refid="library.berkeley_db.classpath"/>
+    <path refid="library.lucene.classpath"/>
+  </path>
+  
+  <path id="syslogunity.module.classpath">
+    <path refid="${module.jdk.classpath.syslogunity}"/>
+    <pathelement location="${syslogunity.output.dir}"/>
+    <path refid="library.berkeley_db.classpath"/>
+    <path refid="library.lucene.classpath"/>
+  </path>
+  
+  <path id="syslogunity.runtime.module.classpath">
+    <pathelement location="${syslogunity.testoutput.dir}"/>
+    <pathelement location="${syslogunity.output.dir}"/>
+    <path refid="library.berkeley_db.classpath"/>
+    <path refid="library.lucene.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.syslogunity">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.syslogunity">
+    <patternset refid="excluded.from.module.syslogunity"/>
+  </patternset>
+  
+  <path id="syslogunity.module.sourcepath">
+    <dirset dir="${module.syslogunity.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.syslogunity" depends="compile.module.syslogunity.production,compile.module.syslogunity.tests" description="Compile module syslogUnity"/>
+  
+  <target name="compile.module.syslogunity.production" description="Compile module syslogUnity; production classes">
+    <mkdir dir="${syslogunity.output.dir}"/>
+    <javac destdir="${syslogunity.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.syslogunity}/javac">
+      <compilerarg line="${compiler.args.syslogunity}"/>
+      <bootclasspath refid="syslogunity.module.bootclasspath"/>
+      <classpath refid="syslogunity.module.production.classpath"/>
+      <src refid="syslogunity.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.syslogunity"/>
+    </javac>
+    
+    <copy todir="${syslogunity.output.dir}">
+      <fileset dir="${module.syslogunity.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.syslogunity.tests" depends="compile.module.syslogunity.production" description="compile module syslogUnity; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.syslogunity" description="cleanup module">
+    <delete dir="${syslogunity.output.dir}"/>
+    <delete dir="${syslogunity.testoutput.dir}"/>
+  </target>
+</project>
