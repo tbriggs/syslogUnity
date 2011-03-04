@@ -26,7 +26,7 @@ import org.apache.lucene.store.FSDirectory;
  */
 
 public class processQueue {
-    private static File dbEnvDir = new File("queueDB/");
+    private static File dbEnvDir = new File("/var/lib/syslogUnity/queueDB/");
     private static IndexWriter writer = null;
     private static PatternAnalyzer analyzer = null;
 
