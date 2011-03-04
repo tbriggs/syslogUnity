@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+
+<!-- ======================================================= -->
+<!-- Ant Build File for Berkeley DB Java Edition compilation -->
+<!-- ======================================================= -->
+
+<project name="compile" default="compile" basedir=".">
+    <description>Compile java code.</description>
+
+    <property name="srcdir" value="${basedir}/src"/>
+    <property name="builddir" value="${basedir}/build"/>
+    <property name="destdir" value="${builddir}/classes"/>
+    <property name="build.debug" value="on"/>
+    <property name="build.deprecation" value="off"/>
+    <property name="include" value="com/sleepycat/**/*.java"/>
+    <property name="exclude1" value="com/sleepycat/**/jca/**/*.java"/>
+    <property name="exclude3" value="com/sleepycat/je/jmx/plugin/*.java"/>
+    <property name="exclude4" value="com/sleepycat/je/rep/jmx/plugin/*.java"/>
+    <property name="exclude5" value="android/JECursorAdapter/**"/>
+    <property name="jdk.version" value="1.5"/>
+
+    <!-- This compile target supports our policy of enforcing the  -->
+    <!-- compilation of our non-HA code without any HA references. -->
+    <!-- The sourcepath="" line must be specified in that way to   -->
+    <!-- clear out the field and make sure that exclude1 and       -->
+    <!-- exclude2 take effect.                                     -->
+    <target name="compile">
+        <javac sourcepath=""
+               srcdir="${srcdir}"
+               includes="${include}"
+               excludes="${exclude1}, ${exclude2}, ${exclude3}, ${exclude4}, 
+                         ${exclude5}"
+               destdir="${destdir}" 
+               debug="${build.debug}"
+               deprecation="${build.deprecation}" 
+               optimize="on"
+	       includeantruntime="true"
+               source="${jdk.version}"
+               target="${jdk.version}">
+            <classpath refid="compile.classpath"/>
+            <!--
+            <compilerarg value="-Xlint:unchecked"/>
+            -->
+        </javac>
+    </target>
+</project>
