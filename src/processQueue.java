@@ -8,8 +8,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.analysis.miscellaneous.PatternAnalyzer;
 import org.apache.lucene.util.Version;
 import org.apache.lucene.store.FSDirectory;
-import sun.awt.Symbol;
-
 
 /*
  * This file is part of syslogUnity.

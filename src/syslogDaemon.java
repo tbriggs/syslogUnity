@@ -6,7 +6,6 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.util.Date;
 import java.io.File;
-import java.nio.ByteBuffer;
 
 /*
  * This file is part of syslogUnity.
