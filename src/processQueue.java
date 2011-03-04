@@ -84,9 +84,12 @@ public class processQueue {
 
 
         while (true) {
-            if (cursor.getNext(kdbt, ddbt, null) == OperationStatus.SUCCESS) {
+            check = cursor.getNext(kdbt, ddbt, null);
+            if (check == OperationStatus.SUCCESS) {
                 indexLine(kdbt, ddbt);
                 //System.out.print("key: " + kdbt.getRecordNumber() + " data: " + ddbt.getString() + "\n");
+            } else {
+                System.out.print(check.toString() + "\n");
             }
         }
 
