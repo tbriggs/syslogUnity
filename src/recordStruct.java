@@ -21,7 +21,7 @@ import java.nio.ByteBuffer;
 class recordStruct {
     public byte[] recordBytes = new byte[1024];
     private ByteBuffer data = ByteBuffer.wrap(recordBytes);
-    private int logLineLength;
+    public int logLineLength;
 
     recordStruct(byte[] rawData) {
         data.put(rawData, 0, 1024);

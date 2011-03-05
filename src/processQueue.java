@@ -120,7 +120,7 @@ public class processQueue {
                          "\nDate:" + queueDate.toString() +
                          "\nPri:" + queuePriority +
                          "\nIP:" + queueHost.toString() +
-                         "\nData:\n" + queueLogLine + "\n");
+                         "\nData:\n" + queueRecord.logLineLength + queueLogLine + "\n");
 //    Document doc = new Document();
 //    doc.add
 //    writer.addDocument(doc);
