@@ -34,7 +34,7 @@ class recordStruct {
         try {
           data.put(stringBytes);
         } catch (Exception BufferOverflowException) {
-          System.out.print("BufferOverflowException!\n"
+          System.out.print("BufferOverflowException!\n" +
                            "StringLen:" + stringBytes.length + "\n" +
                            "ByteBufferLen:" + data.array().length + "\n" +
                            "ByteBuffer:" + data.toString() + "\n\n");
