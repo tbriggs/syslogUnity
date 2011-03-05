@@ -28,11 +28,17 @@ class recordStruct {
 
     recordStruct(InetAddress host, int priority, long epoch, String logLine) {
         byte[] stringBytes = logLine.getBytes();
-        System.out.print(stringBytes.length + "\n");
         data.put(host.getAddress());
         data.putInt(priority);
         data.putLong(epoch);
-        data.put(stringBytes);
+        try {
+          data.put(stringBytes);
+        } catch (Exception BufferOverflowException) {
+          System.out.print("BufferOverflowException!\n"
+                           "StringLen:" + stringBytes.length + "\n" +
+                           "ByteBufferLen:" + data.array().length + "\n" +
+                           "ByteBuffer:" + data.toString() + "\n\n");
+        }
         logLineLength = stringBytes.length;
     }
 
