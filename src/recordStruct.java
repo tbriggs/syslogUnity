@@ -61,12 +61,20 @@ class recordStruct {
     }
 
     public String getLogLine() {
-        ByteBuffer bbint = ByteBuffer.wrap(recordBytes,16,4);
-        int logLineLength = bbint.getInt();
+        int logLineLength = stringLength();
         ByteBuffer bbstr = ByteBuffer.wrap(recordBytes,20,logLineLength);
         byte[] temp = new byte[logLineLength];
         bbstr.get(temp);
         return new String(temp);
+    }
+
+    public int stringLength() {
+        ByteBuffer bbint = ByteBuffer.wrap(recordBytes,16,4);
+        return bbint.getInt();
+    }
+
+    public byte[] trimmedBytes() {
+        return ByteBuffer.wrap(recordBytes,0,(20+stringLength())).array();
     }
 
 }

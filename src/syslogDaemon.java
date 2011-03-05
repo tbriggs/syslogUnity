@@ -51,7 +51,7 @@ public class syslogDaemon {
         queueConfig.setAllowCreate(true);
         queueConfig.setPageSize(4096);
         queueConfig.setRecordLength(1024);
-        final Database queue = env.openDatabase(null, "logQueue.db", null, queueConfig);
+        final Database queue = env.openDatabase(null, "logQueue.db", "logQueue", queueConfig);
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {

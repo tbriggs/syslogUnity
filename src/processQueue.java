@@ -1,5 +1,6 @@
 import java.io.File;
 import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.regex.Pattern;
 import java.lang.Thread;
@@ -53,12 +54,20 @@ public class processQueue {
         queueConfig.setPageSize(4096);
         queueConfig.setRecordLength(1024);
 
-        final Database queue = env.openDatabase(null, "logQueue.db", null, queueConfig);
+        final Database queue = env.openDatabase(null, "logQueue.db", "logQueue", queueConfig);
 
-        IntEntry kdbt = new IntEntry();
-        StringEntry ddbt = new StringEntry();
-        final Cursor cursor;
-        cursor = queue.openCursor(null, null);
+        DatabaseConfig storeConfig = new DatabaseConfig();
+        storeConfig.setType(DatabaseType.HASH);
+        storeConfig.setAllowCreate(true);
+        storeConfig.setReadOnly(false);
+        storeConfig.setPageSize(4096);
+
+        final Database store = env.openDatabase(null, "logStore.db", "logStore", storeConfig);
+
+        IntEntry queueKeyDBT = new IntEntry();
+        DatabaseEntry queueDataDBT = new DatabaseEntry();
+
+
         OperationStatus check;
 
         PatternAnalyzer analyzer = new PatternAnalyzer(Version.LUCENE_30, Pattern.compile("\\W+"), true, null);
@@ -68,7 +77,7 @@ public class processQueue {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 try {
-                    cursor.close();
+                    store.close();
                     queue.close();
                     env.close();
                     System.out.print("Closed DB Gracefully...\n");
@@ -78,23 +87,11 @@ public class processQueue {
             }
         });
 
-        check = cursor.getFirst(kdbt, ddbt, null);
-
-        if (check == OperationStatus.SUCCESS) {
-            indexLine(kdbt, ddbt);
-        } else {
-            System.out.print("Error on first read: " + check.toString() + "\n");
-        }
 
         while (true) {
-
-            check = cursor.getNext(kdbt, ddbt, null);
-
+            check = queue.consume(null, queueKeyDBT, queueDataDBT, true);
             if (check == OperationStatus.SUCCESS) {
-                indexLine(kdbt, ddbt);
-                //System.out.print("key: " + kdbt.getRecordNumber() + " data: " + ddbt.getString() + "\n");
-            } else if (check == OperationStatus.NOTFOUND) {
-
+                indexQueue(queueKeyDBT, queueDataDBT, store);
             }
         }
 
@@ -102,8 +99,8 @@ public class processQueue {
 //    queue.close();
     }
 
-    private static void indexLine(IntEntry key, StringEntry record) {
-        recordStruct queueRecord = new recordStruct(record.getData());
+    private static void indexQueue(IntEntry queueKeyDBT, DatabaseEntry queueDataDBT, Database store) {
+        recordStruct queueRecord = new recordStruct(queueDataDBT.getData());
 
         Date queueDate = new Date(queueRecord.getEpoch());
         int queuePriority = queueRecord.getPriority();
@@ -116,7 +113,23 @@ public class processQueue {
             return;
         }
 
-        System.out.print("key:" + key.getInt() +
+        long sk = (long)queueKeyDBT.getInt();
+        byte[] k = ByteBuffer.allocate(8).putLong(sk).array();
+        byte[] d = queueRecord.trimmedBytes();
+
+        DatabaseEntry storeKeyDBT = new DatabaseEntry(k);
+        storeKeyDBT.setSize(8);
+        DatabaseEntry storeDataDBT = new DatabaseEntry(d);
+        storeDataDBT.setSize(d.length);
+
+        try {
+            store.append(null, storeKeyDBT, storeDataDBT);
+        } catch (Exception dbe) {
+            System.out.print("Couldn't add record to database\n");
+        }
+
+
+        System.out.print("key:" + queueKeyDBT.getInt() +
                          "\nDate:" + queueDate.toString() +
                          "\nPri:" + queuePriority +
                          "\nIP:" + queueHost.getHostAddress() +
