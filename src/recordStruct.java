@@ -21,7 +21,6 @@ import java.nio.ByteBuffer;
 class recordStruct {
     public byte[] recordBytes = new byte[1024];
     private ByteBuffer data = ByteBuffer.wrap(recordBytes);
-    public int logLineLength;
 
     recordStruct(byte[] rawData) {
         data.put(rawData, 0, 1024);
@@ -32,7 +31,7 @@ class recordStruct {
         data.put(host.getAddress());
         data.putInt(priority);
         data.putLong(epoch);
-        logLineLength = stringBytes.length;
+        data.putInt(stringBytes.length);
         try {
             data.put(stringBytes);
         } catch (Exception BufferOverflowException) {
@@ -41,6 +40,7 @@ class recordStruct {
                     "ByteBufferLen:" + data.array().length + "\n" +
                     "ByteBuffer:" + data.toString() + "\n\n");
         }
+
     }
 
     public byte[] getHost() {
@@ -61,9 +61,11 @@ class recordStruct {
     }
 
     public String getLogLine() {
-        ByteBuffer bb = ByteBuffer.wrap(recordBytes,16,logLineLength);
+        ByteBuffer bbint = ByteBuffer.wrap(recordBytes,16,4);
+        int logLineLength = bbint.getInt();
+        ByteBuffer bbstr = ByteBuffer.wrap(recordBytes,20,logLineLength);
         byte[] temp = new byte[logLineLength];
-        bb.get(temp);
+        bbstr.get(temp);
         return new String(temp);
     }
 
