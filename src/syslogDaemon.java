@@ -56,21 +56,22 @@ public class syslogDaemon {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 try {
-                    queue.close();
-                    env.close();
-                    System.out.print("Closed DB Gracefully...\n");
+                  whileBreak.almostalways = false;
                 } catch (Exception dbe) {
                     System.out.print("Caught SIGINT, couldn't close queueDB successfully\n");
                 }
             }
         });
 
-        while (true) {
+        while (whileBreak.almostalways) {
             syslog.receive(logEntry);
             InetAddress logHost = logEntry.getAddress();
             String logLine = new String(logEntry.getData(), 0, logEntry.getLength());
             doStuff(logLine, logHost, queue);
         }
+                            queue.close();
+                    env.close();
+                    System.out.print("Closed DB Gracefully...\n");
     }
 
     void doStuff(String logLine, InetAddress logHost, Database queue) {

@@ -2,15 +2,15 @@ import java.io.File;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.Date;
-import java.util.regex.Pattern;
+//import java.util.regex.Pattern;
 import java.lang.Thread;
 
 import com.sleepycat.db.*;
 
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.analysis.miscellaneous.PatternAnalyzer;
-import org.apache.lucene.util.Version;
-import org.apache.lucene.store.FSDirectory;
+//import org.apache.lucene.index.IndexWriter;
+//import org.apache.lucene.analysis.miscellaneous.PatternAnalyzer;
+//import org.apache.lucene.util.Version;
+//import org.apache.lucene.store.FSDirectory;
 
 /*
  * This file is part of syslogUnity.
@@ -31,13 +31,14 @@ import org.apache.lucene.store.FSDirectory;
 
 public class processQueue {
     private static File dbEnvDir = new File("/var/lib/syslogUnity/queueDB/");
-    private static IndexWriter writer = null;
-    private static PatternAnalyzer analyzer = null;
+//    private static IndexWriter writer = null;
+//    private static PatternAnalyzer analyzer = null;
+
 
 
     public static void main(String[] args) throws Exception {
 
-        final File INDEX_DIR = new File("indexDB/");
+  //      final File INDEX_DIR = new File("indexDB/");
 
         EnvironmentConfig envConfig = new EnvironmentConfig();
         envConfig.setTransactional(true);
@@ -70,33 +71,33 @@ public class processQueue {
 
         OperationStatus check;
 
-        PatternAnalyzer analyzer = new PatternAnalyzer(Version.LUCENE_30, Pattern.compile("\\W+"), true, null);
-        IndexWriter writer = new IndexWriter(FSDirectory.open(INDEX_DIR), analyzer, IndexWriter.MaxFieldLength.LIMITED);
-        writer.setRAMBufferSizeMB(8);
+//        PatternAnalyzer analyzer = new PatternAnalyzer(Version.LUCENE_30, Pattern.compile("\\W+"), true, null);
+//        IndexWriter writer = new IndexWriter(FSDirectory.open(INDEX_DIR), analyzer, IndexWriter.MaxFieldLength.LIMITED);
+//        writer.setRAMBufferSizeMB(8);
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 try {
-                    store.close();
-                    queue.close();
-                    env.close();
-                    System.out.print("Closed DB Gracefully...\n");
+                    whileBreak.almostalways = false;
+
                 } catch (Exception dbe) {
                     System.out.print("Caught SIGINT, couldn't close queueDB successfully\n");
                 }
             }
         });
 
-
-        while (true) {
+        while (whileBreak.almostalways) {
             check = queue.consume(null, queueKeyDBT, queueDataDBT, true);
             if (check == OperationStatus.SUCCESS) {
                 indexQueue(queueKeyDBT, queueDataDBT, store);
             }
         }
 
-//    cursor.close();
-//    queue.close();
+                    store.close();
+                    queue.close();
+                    env.close();
+  System.out.print("Closed DB Gracefully...\n");
+
     }
 
     private static void indexQueue(IntEntry queueKeyDBT, DatabaseEntry queueDataDBT, Database store) {
