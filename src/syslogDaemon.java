@@ -87,7 +87,7 @@ public class syslogDaemon {
 
         recordStruct queueRecord = new recordStruct(logHost,logIntPriority,logDate.getTime(),logData);
         byte[] k = new byte[4];
-        byte[] d = queueRecord.recordBytes;
+        byte[] d = queueRecord.recordBytes();
 
         DatabaseEntry kdbt = new DatabaseEntry(k);
         kdbt.setSize(4);
