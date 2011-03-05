@@ -19,42 +19,58 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 class recordStruct {
-    private ByteBuffer data = ByteBuffer.allocate(1024);
+    public byte[] recordBacking = new byte[1024];
     private int logLineLength;
 
     recordStruct(byte[] rawData) {
+        ByteBuffer data = ByteBuffer.wrap(recordBacking);
         data.put(rawData, 0, 1024);
     }
 
     recordStruct(InetAddress host, int priority, long epoch, String logLine) {
+        ByteBuffer data = ByteBuffer.wrap(recordBacking);
+
         byte[] stringBytes = logLine.getBytes();
         data.put(host.getAddress(), 0, 4);
         data.putInt(4, priority);
         data.putLong(7, epoch);
-        data.put(stringBytes, 16, stringBytes.length);
+        try {
+            data.put(stringBytes, 16, stringBytes.length);
+        } catch (Exception BufferOverflowException) {
+            System.out.print("BufferOverflowException!\n" +
+                    "StringLen:" + stringBytes.length + "\n" +
+                    "ByteBufferLen:" + data.array().length + "\n" +
+                    "ByteBuffer:" + data.toString() + "\n\n");
+        }
         logLineLength = stringBytes.length;
     }
 
     public byte[] recordBytes() {
+        ByteBuffer data = ByteBuffer.wrap(recordBacking);
         return data.array();
     }
 
     public byte[] getHost() {
+        ByteBuffer data = ByteBuffer.wrap(recordBacking);
         byte[] temp = new byte[4];
         data.get(temp, 0, 4);
         return temp;
     }
 
     public int getPriority() {
+        ByteBuffer data = ByteBuffer.wrap(recordBacking);
         return data.getInt(4);
     }
 
     public long getEpoch() {
+        ByteBuffer data = ByteBuffer.wrap(recordBacking);
         return data.getLong(7);
     }
 
     public String getLogLine() {
+        ByteBuffer data = ByteBuffer.wrap(recordBacking);
         byte[] temp = new byte[logLineLength];
+        data.get(temp,16,logLineLength);
         return new String(temp);
     }
 
