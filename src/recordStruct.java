@@ -19,7 +19,8 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 class recordStruct {
-    private ByteBuffer data = ByteBuffer.allocate(1024);
+    public byte[] recordBytes = new byte[1024];
+    private ByteBuffer data = ByteBuffer.wrap(recordBytes);
     private int logLineLength;
 
     recordStruct(byte[] rawData) {
@@ -42,25 +43,25 @@ class recordStruct {
         logLineLength = stringBytes.length;
     }
 
-    public byte[] recordBytes() {
-        return data.array();
-    }
-
     public byte[] getHost() {
+        ByteBuffer data = ByteBuffer.wrap(recordBytes);
         byte[] temp = new byte[4];
         data.get(temp, 0, 4);
         return temp;
     }
 
     public int getPriority() {
+        ByteBuffer data = ByteBuffer.wrap(recordBytes);
         return data.getInt(4);
     }
 
     public long getEpoch() {
+        ByteBuffer data = ByteBuffer.wrap(recordBytes);
         return data.getLong(7);
     }
 
     public String getLogLine() {
+        ByteBuffer data = ByteBuffer.wrap(recordBytes);
         byte[] temp = new byte[logLineLength];
         data.get(temp,16,logLineLength);
         return new String(temp);
