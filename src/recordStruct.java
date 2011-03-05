@@ -63,7 +63,7 @@ class recordStruct {
     public String getLogLine() {
         ByteBuffer data = ByteBuffer.wrap(recordBytes);
         byte[] temp = new byte[logLineLength];
-        data.get(temp,16,logLineLength);
+        data.get(temp,16,logLineLength -16);
         return new String(temp);
     }
 
