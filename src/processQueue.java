@@ -124,7 +124,7 @@ public class processQueue {
         storeDataDBT.setSize(d.length);
 
         try {
-            store.append(null, storeKeyDBT, storeDataDBT);
+            store.put(null, storeKeyDBT, storeDataDBT);
         } catch (Exception dbe) {
             System.out.print("Couldn't add record to database\n");
         }
