@@ -44,26 +44,26 @@ class recordStruct {
     }
 
     public byte[] getHost() {
-        ByteBuffer data = ByteBuffer.wrap(recordBytes);
+        ByteBuffer data = ByteBuffer.wrap(recordBytes,0,4);
         byte[] temp = new byte[4];
-        data.get(temp, 0, 4);
+        data.get(temp);
         return temp;
     }
 
     public int getPriority() {
-        ByteBuffer data = ByteBuffer.wrap(recordBytes);
-        return data.getInt(4);
+        ByteBuffer data = ByteBuffer.wrap(recordBytes,4,4);
+        return data.getInt();
     }
 
     public long getEpoch() {
-        ByteBuffer data = ByteBuffer.wrap(recordBytes);
-        return data.getLong(7);
+        ByteBuffer data = ByteBuffer.wrap(recordBytes,7,8);
+        return data.getLong();
     }
 
     public String getLogLine() {
-        ByteBuffer data = ByteBuffer.wrap(recordBytes);
+        ByteBuffer data = ByteBuffer.wrap(recordBytes,16,logLineLength);
         byte[] temp = new byte[logLineLength];
-        data.get(temp,16,logLineLength -16);
+        data.get(temp);
         return new String(temp);
     }
 
