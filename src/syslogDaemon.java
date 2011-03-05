@@ -81,15 +81,13 @@ public class syslogDaemon {
             if (logLine.charAt(i) == '>') break;
             if (logLine.charAt(i) != '<') logPriority = logPriority + logLine.charAt(i);
         }
-        String logData = logLine.substring(i + 1, logLine.length());
-        String dateEpoch = Long.toString(logDate.getTime());
-        String insertRecord = dateEpoch.concat("##FD##").
-                concat(logPriority).concat("##FD##").
-                concat(logHost.getHostAddress()).concat("##FD##").
-                concat(logData);
 
+        int logIntPriority = Integer.parseInt(logPriority.trim());
+        String logData = logLine.substring(i + 1, logLine.length());
+
+        recordStruct queueRecord = new recordStruct(logHost,logIntPriority,logDate.getTime(),logData);
         byte[] k = new byte[4];
-        byte[] d = insertRecord.getBytes();
+        byte[] d = queueRecord.recordBytes();
 
         DatabaseEntry kdbt = new DatabaseEntry(k);
         kdbt.setSize(4);

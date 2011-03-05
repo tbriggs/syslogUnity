@@ -1,4 +1,6 @@
 import java.io.File;
+import java.net.InetAddress;
+import java.util.Date;
 import java.util.regex.Pattern;
 import java.lang.Thread;
 
@@ -101,8 +103,24 @@ public class processQueue {
     }
 
     private static void indexLine(IntEntry key, StringEntry record) {
-        String[] arr = record.getString().split("##FD##");
-        System.out.print("key:" + key.getInt() + "\nDate:" + arr[0] + "\nPri:" + arr[1] + "\nIP:" + arr[2] + "\nData:\n" + arr[3] + "\n");
+        recordStruct queueRecord = new recordStruct(record.getData());
+
+        Date queueDate = new Date(queueRecord.getEpoch());
+        int queuePriority = queueRecord.getPriority();
+        InetAddress queueHost;
+        String queueLogLine = queueRecord.getLogLine();
+
+        try {
+            queueHost = InetAddress.getByAddress(queueRecord.getHost());
+        } catch (Exception UnknownHostException) {
+            return;
+        }
+
+        System.out.print("key:" + key.getInt() +
+                         "\nDate:" + queueDate.toString() +
+                         "\nPri:" + queuePriority +
+                         "\nIP:" + queueHost.toString() +
+                         "\nData:\n" + queueLogLine + "\n");
 //    Document doc = new Document();
 //    doc.add
 //    writer.addDocument(doc);
