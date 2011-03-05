@@ -119,7 +119,7 @@ public class processQueue {
         System.out.print("key:" + key.getInt() +
                          "\nDate:" + queueDate.toString() +
                          "\nPri:" + queuePriority +
-                         "\nIP:" + queueHost.toString() +
+                         "\nIP:" + queueHost.getHostAddress() +
                          "\nData: " + queueLogLine + "\n");
 //    Document doc = new Document();
 //    doc.add
