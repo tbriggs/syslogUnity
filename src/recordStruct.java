@@ -27,11 +27,10 @@ class recordStruct {
     }
 
     recordStruct(InetAddress host, int priority, long epoch, String logLine) {
-        System.out.print(logLine.length() + "\n");
         data.put(host.getAddress(),0,4);
         data.putInt(4,priority);
         data.putLong(7,epoch);
-        data.put(logLine.getBytes(),16,logLine.length());
+        data.put(logLine.getBytes(),16,1000);
         logLineLength = logLine.length();
     }
 
