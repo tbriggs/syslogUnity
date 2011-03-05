@@ -84,6 +84,7 @@ public class syslogDaemon {
 
         int logIntPriority = Integer.parseInt(logPriority.trim());
         String logData = logLine.substring(i + 1, logLine.length());
+        System.out.print(logLine.length() + "\n");
 
         recordStruct queueRecord = new recordStruct(logHost,logIntPriority,logDate.getTime(),logData);
         byte[] k = new byte[4];
