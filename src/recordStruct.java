@@ -32,6 +32,7 @@ class recordStruct {
         data.put(host.getAddress());
         data.putInt(priority);
         data.putLong(epoch);
+        logLineLength = stringBytes.length;
         try {
             data.put(stringBytes);
         } catch (Exception BufferOverflowException) {
@@ -40,7 +41,6 @@ class recordStruct {
                     "ByteBufferLen:" + data.array().length + "\n" +
                     "ByteBuffer:" + data.toString() + "\n\n");
         }
-        logLineLength = stringBytes.length;
     }
 
     public byte[] getHost() {
