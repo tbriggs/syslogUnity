@@ -19,7 +19,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 class recordStruct {
-    private final ByteBuffer data = ByteBuffer.allocate(1024);
+    private ByteBuffer data = ByteBuffer.allocate(1024);
     private int logLineLength;
 
     recordStruct(byte[] rawData) {
@@ -28,11 +28,11 @@ class recordStruct {
 
     recordStruct(InetAddress host, int priority, long epoch, String logLine) {
         byte[] stringBytes = logLine.getBytes();
-        data.put(host.getAddress(), 0, 4);
-        data.putInt(4, priority);
-        data.putLong(7, epoch);
+        data.put(host.getAddress());
+        data.putInt(priority);
+        data.putLong(epoch);
         try {
-            data.put(stringBytes, 16, stringBytes.length);
+            data.put(stringBytes);
         } catch (Exception BufferOverflowException) {
             System.out.print("BufferOverflowException!\n" +
                     "StringLen:" + stringBytes.length + "\n" +
