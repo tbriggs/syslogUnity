@@ -54,7 +54,7 @@ public class processQueue {
         queueConfig.setPageSize(4096);
         queueConfig.setRecordLength(1024);
 
-        final Database queue = env.openDatabase(null, "logQueue.db", "logQueue", queueConfig);
+        final Database queue = env.openDatabase(null, "logQueue.db", null, queueConfig);
 
         DatabaseConfig storeConfig = new DatabaseConfig();
         storeConfig.setType(DatabaseType.HASH);
@@ -62,7 +62,7 @@ public class processQueue {
         storeConfig.setReadOnly(false);
         storeConfig.setPageSize(4096);
 
-        final Database store = env.openDatabase(null, "logStore.db", "logStore", storeConfig);
+        final Database store = env.openDatabase(null, "logStore.db", null, storeConfig);
 
         IntEntry queueKeyDBT = new IntEntry();
         DatabaseEntry queueDataDBT = new DatabaseEntry();
