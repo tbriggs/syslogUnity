@@ -19,8 +19,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 class recordStruct {
-    public byte[] recordBacking = new byte[1024];
-    private ByteBuffer data = ByteBuffer.wrap(recordBacking);
+    private ByteBuffer data = ByteBuffer.allocateDirect(1024);
     private int logLineLength;
 
     recordStruct(byte[] rawData) {
