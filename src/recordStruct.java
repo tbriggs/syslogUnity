@@ -23,21 +23,21 @@ class recordStruct {
     private static int logLineLength;
 
     recordStruct(byte[] rawData) {
-        data.put(rawData,0,1024);
+        data.put(rawData, 0, 1024);
     }
 
     recordStruct(InetAddress host, int priority, long epoch, String logLine) {
         byte[] stringBytes = logLine.getBytes();
-        data.put(host.getAddress());
-        data.putInt(priority);
-        data.putLong(epoch);
+        data.put(host.getAddress(), 0, 4);
+        data.putInt(4, priority);
+        data.putLong(7, epoch);
         try {
-          data.put(stringBytes);
+            data.put(stringBytes, 16, stringBytes.length);
         } catch (Exception BufferOverflowException) {
-          System.out.print("BufferOverflowException!\n" +
-                           "StringLen:" + stringBytes.length + "\n" +
-                           "ByteBufferLen:" + data.array().length + "\n" +
-                           "ByteBuffer:" + data.toString() + "\n\n");
+            System.out.print("BufferOverflowException!\n" +
+                    "StringLen:" + stringBytes.length + "\n" +
+                    "ByteBufferLen:" + data.array().length + "\n" +
+                    "ByteBuffer:" + data.toString() + "\n\n");
         }
         logLineLength = stringBytes.length;
     }
@@ -48,7 +48,7 @@ class recordStruct {
 
     public byte[] getHost() {
         byte[] temp = new byte[4];
-        data.get(temp,0,4);
+        data.get(temp, 0, 4);
         return temp;
     }
 
