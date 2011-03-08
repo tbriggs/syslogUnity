@@ -146,7 +146,8 @@ class syslogProcess implements Runnable {
                             + logRecord.priority + ","
                             + "'" + logRecord.host.getHostAddress() + "',"
                             + "'" + logRecord.data + "'"
-                            + ")"
+                            + ")",
+                    Statement.RETURN_GENERATED_KEYS
             );
             ResultSet rs = logLineSQL.getGeneratedKeys();
             logLineKey = rs.getLong(1);
