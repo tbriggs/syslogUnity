@@ -1,6 +1,5 @@
 import java.io.IOException;
 import java.net.*;
-import java.nio.ByteBuffer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -91,7 +90,7 @@ class syslogReceive implements Runnable {
         int logIntPriority = Integer.parseInt(logPriority.trim());
         String logData = logLine.substring(i + 1, logLine.length());
 
-        return new recordStruct(logHost, logIntPriority, logDate.getTime(), logData);
+        return new recordStruct(logDate, logIntPriority, logHost, logData);
 
     }
 }
@@ -128,11 +127,7 @@ class syslogProcess implements Runnable {
     }
 
     void printLine(recordStruct logRecord, Connection dbConnection) {
-        Date queueDate = new Date(logRecord.getEpoch());
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        int queuePriority = logRecord.getPriority();
-        InetAddress queueHost;
-        String queueLogLine = logRecord.getLogLine();
         Statement logLineSQL;
         long logLineKey;
 
@@ -144,20 +139,13 @@ class syslogProcess implements Runnable {
         }
 
         try {
-            queueHost = InetAddress.getByAddress(logRecord.getHost());
-        } catch (Exception ex) {
-            System.out.print("UnknownHostException: " + ex.toString() + "\n");
-            return;
-        }
-
-        try {
             logLineSQL.executeUpdate(
                     "INSERT INTO logLines (date, priority, host, data)"
                             + "VALUES ("
-                            + "'" + dateFormat.format(queueDate) + "',"
-                            + queuePriority + ","
-                            + "'" + queueHost.getHostAddress() + "',"
-                            + "'" + queueLogLine + "'"
+                            + "'" + dateFormat.format(logRecord.date) + "',"
+                            + logRecord.priority + ","
+                            + "'" + logRecord.host.getHostAddress() + "',"
+                            + "'" + logRecord.data + "'"
                             + ")"
             );
             ResultSet rs = logLineSQL.getGeneratedKeys();
@@ -175,60 +163,16 @@ class syslogProcess implements Runnable {
 }
 
 class recordStruct {
-    public byte[] recordBytes = new byte[1024];
-    ByteBuffer data = ByteBuffer.wrap(recordBytes);
+    public Date date;
+    public int priority;
+    public InetAddress host;
+    public String data;
 
-//    recordStruct(byte[] rawData) {
-//        data.put(rawData, 0, 1024);
-//    }
-
-    recordStruct(InetAddress host, int priority, long epoch, String logLine) {
-        byte[] stringBytes = logLine.getBytes();
-        data.put(host.getAddress());
-        data.putInt(priority);
-        data.putLong(epoch);
-        data.putInt(stringBytes.length);
-        try {
-            data.put(stringBytes);
-        } catch (Exception ex) {
-            System.out.print("BufferOverflowException: " + ex.toString() + "\n");
-        }
-
+    recordStruct(Date d, int p, InetAddress i, String s) {
+        date = d;
+        priority = p;
+        host = i;
+        data = s;
     }
-
-    public byte[] getHost() {
-        ByteBuffer bb = ByteBuffer.wrap(recordBytes, 0, 4);
-        byte[] temp = new byte[4];
-        bb.get(temp);
-        return temp;
-    }
-
-    public int getPriority() {
-        ByteBuffer bb = ByteBuffer.wrap(recordBytes, 4, 4);
-        return bb.getInt();
-    }
-
-    public long getEpoch() {
-        ByteBuffer bb = ByteBuffer.wrap(recordBytes, 7, 8);
-        return bb.getLong();
-    }
-
-    public String getLogLine() {
-        int logLineLength = stringLength();
-        ByteBuffer bbstr = ByteBuffer.wrap(recordBytes, 20, logLineLength);
-        byte[] temp = new byte[logLineLength];
-        bbstr.get(temp);
-        return new String(temp);
-    }
-
-    public int stringLength() {
-        ByteBuffer bbint = ByteBuffer.wrap(recordBytes, 16, 4);
-        return bbint.getInt();
-    }
-
-//    public byte[] trimmedBytes() {
-//        return ByteBuffer.wrap(recordBytes,0,(20+stringLength())).array();
-//    }
-
 }
 
