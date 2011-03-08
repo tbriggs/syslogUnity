@@ -13,18 +13,18 @@ class syslogUnityBackend {
         BlockingQueue<recordStruct> q = new LinkedBlockingQueue<recordStruct>();
 
         syslogReceive logServer = new syslogReceive(q);
-        syslogProcess logPrinter1 = new syslogProcess(q);
-        syslogProcess logPrinter2 = new syslogProcess(q);
-        syslogProcess logPrinter3 = new syslogProcess(q);
-        syslogProcess logPrinter4 = new syslogProcess(q);
-        syslogProcess logPrinter5 = new syslogProcess(q);
+        syslogProcess logStore1 = new syslogProcess(q);
+        syslogProcess logStore2 = new syslogProcess(q);
+        syslogProcess logStore3 = new syslogProcess(q);
+        syslogProcess logStore4 = new syslogProcess(q);
+        syslogProcess logStore5 = new syslogProcess(q);
 
         new Thread(logServer).start();
-        new Thread(logPrinter1).start();
-        new Thread(logPrinter2).start();
-        new Thread(logPrinter3).start();
-        new Thread(logPrinter4).start();
-        new Thread(logPrinter5).start();
+        new Thread(logStore1).start();
+        new Thread(logStore2).start();
+        new Thread(logStore3).start();
+        new Thread(logStore4).start();
+        new Thread(logStore5).start();
 
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -119,14 +119,14 @@ class syslogProcess implements Runnable {
 
         try {
             while (loopControl.test) {
-                printLine(queue.take(), dbConnection);
+                storeLine(queue.take(), dbConnection);
             }
         } catch (InterruptedException ex) {
             System.out.print("InterruptedException: " + ex.toString() + "\n");
         }
     }
 
-    void printLine(recordStruct logRecord, Connection dbConnection) {
+    void storeLine(recordStruct logRecord, Connection dbConnection) {
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Statement logLineSQL;
         long logLineKey;
