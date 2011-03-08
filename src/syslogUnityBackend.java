@@ -152,6 +152,9 @@ class syslogProcess implements Runnable {
             ResultSet rs = logLineSQL.getGeneratedKeys();
             if (rs.next()) {
                 logLineKey = rs.getLong(1);
+            } else {
+                System.out.print("SQL rs error\n");
+                return;
             }
             rs.close();
             logLineSQL.close();
