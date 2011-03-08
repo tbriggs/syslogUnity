@@ -1,30 +1,32 @@
 import java.io.IOException;
 import java.net.*;
 import java.nio.ByteBuffer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.mongodb.Mongo;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.BasicDBObject;
+import java.sql.*;
 
 class syslogUnityBackend {
     public static void main(String[] args) {
         BlockingQueue<recordStruct> q = new LinkedBlockingQueue<recordStruct>();
-        final Mongo m;
-        try {
-            m = new Mongo("127.0.0.1", 27017);
-        } catch (UnknownHostException ex) {
-            System.out.print("UnknownHostException: " + ex.toString() + "\n");
-            return;
-        }
 
         syslogReceive logServer = new syslogReceive(q);
-        syslogProcess logPrinter = new syslogProcess(q,m);
+        syslogProcess logPrinter1 = new syslogProcess(q);
+        syslogProcess logPrinter2 = new syslogProcess(q);
+        syslogProcess logPrinter3 = new syslogProcess(q);
+        syslogProcess logPrinter4 = new syslogProcess(q);
+        syslogProcess logPrinter5 = new syslogProcess(q);
+
         new Thread(logServer).start();
-        new Thread(logPrinter).start();
+        new Thread(logPrinter1).start();
+        new Thread(logPrinter2).start();
+        new Thread(logPrinter3).start();
+        new Thread(logPrinter4).start();
+        new Thread(logPrinter5).start();
+
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
@@ -96,33 +98,50 @@ class syslogReceive implements Runnable {
 
 class syslogProcess implements Runnable {
     private final BlockingQueue<recordStruct> queue;
-    private final Mongo mongo;
 
-    syslogProcess(BlockingQueue<recordStruct> q, Mongo m) {
+    syslogProcess(BlockingQueue<recordStruct> q) {
         queue = q;
-        mongo = m;
     }
 
     public void run() {
+        Connection dbConnection;
 
-        DB logDB = mongo.getDB("logStore");
-        DBCollection logCollection = logDB.getCollection("logLines");
+        String userName = "syslogUnity";
+        String password = "syslogUnity";
+        String url = "jdbc:mysql://localhost/syslogUnity";
+
+        try {
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            dbConnection = DriverManager.getConnection(url, userName, password);
+        } catch (Exception ex) {
+            System.out.print("Exception: " + ex.toString() + "\n");
+            return;
+        }
 
         try {
             while (loopControl.test) {
-                printLine(queue.take(), logCollection);
+                printLine(queue.take(), dbConnection);
             }
         } catch (InterruptedException ex) {
             System.out.print("InterruptedException: " + ex.toString() + "\n");
         }
     }
 
-    void printLine(recordStruct logRecord, DBCollection logCollection) {
+    void printLine(recordStruct logRecord, Connection dbConnection) {
         Date queueDate = new Date(logRecord.getEpoch());
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         int queuePriority = logRecord.getPriority();
         InetAddress queueHost;
         String queueLogLine = logRecord.getLogLine();
-        BasicDBObject logLine = new BasicDBObject();
+        Statement logLineSQL;
+        long logLineKey;
+
+        try {
+            logLineSQL = dbConnection.createStatement();
+        } catch (SQLException ex) {
+            System.out.print("SQLException: " + ex.toString() + "\n");
+            return;
+        }
 
         try {
             queueHost = InetAddress.getByAddress(logRecord.getHost());
@@ -131,11 +150,27 @@ class syslogProcess implements Runnable {
             return;
         }
 
-        logLine.put("Date", queueDate);
-        logLine.put("Priority", queuePriority);
-        logLine.put("IP", queueHost.getHostAddress());
-        logLine.put("Data", queueLogLine);
-        logCollection.insert(logLine);
+        try {
+            logLineSQL.executeUpdate(
+                    "INSERT INTO syslogUnity (date, priority, host, data)"
+                            + "VALUES ("
+                            + "'" + dateFormat.format(queueDate) + "',"
+                            + queuePriority + ","
+                            + "'" + queueHost.getHostAddress() + "',"
+                            + "'" + queueLogLine + "'"
+                            + ")"
+            );
+            ResultSet rs = logLineSQL.getGeneratedKeys();
+            logLineKey = rs.getLong(1);
+            rs.close();
+            logLineSQL.close();
+        } catch (SQLException ex) {
+            System.out.print("SQLException: " + ex.toString() + "\n");
+            return;
+        }
+
+
+        System.out.print("Inserted Successfully Key#" + logLineKey + "\n");
     }
 }
 
