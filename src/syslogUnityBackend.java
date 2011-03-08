@@ -152,7 +152,7 @@ class syslogProcess implements Runnable {
 
         try {
             logLineSQL.executeUpdate(
-                    "INSERT INTO syslogUnity (date, priority, host, data)"
+                    "INSERT INTO logLines (date, priority, host, data)"
                             + "VALUES ("
                             + "'" + dateFormat.format(queueDate) + "',"
                             + queuePriority + ","
