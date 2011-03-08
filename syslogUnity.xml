@@ -86,10 +86,6 @@
   
   <!-- Project Libraries -->
   
-  <path id="library.berkeley_db.classpath">
-    <pathelement location="${basedir}/db-5.1/db.jar"/>
-  </path>
-  
   <path id="library.lucene.classpath">
     <fileset dir="${basedir}/lucene-3.0.3">
       <patternset refid="library.patterns"/>
@@ -171,6 +167,10 @@
     </fileset>
   </path>
   
+  <path id="library.mongodb.classpath">
+    <pathelement location="${basedir}/mongo/mongo-2.4.jar"/>
+  </path>
+  
   <!-- Modules -->
   
   
@@ -194,28 +194,28 @@
   
   <path id="syslogunity.module.production.classpath">
     <path refid="${module.jdk.classpath.syslogunity}"/>
-    <path refid="library.berkeley_db.classpath"/>
     <path refid="library.lucene.classpath"/>
+    <path refid="library.mongodb.classpath"/>
   </path>
   
   <path id="syslogunity.runtime.production.module.classpath">
     <pathelement location="${syslogunity.output.dir}"/>
-    <path refid="library.berkeley_db.classpath"/>
     <path refid="library.lucene.classpath"/>
+    <path refid="library.mongodb.classpath"/>
   </path>
   
   <path id="syslogunity.module.classpath">
     <path refid="${module.jdk.classpath.syslogunity}"/>
     <pathelement location="${syslogunity.output.dir}"/>
-    <path refid="library.berkeley_db.classpath"/>
     <path refid="library.lucene.classpath"/>
+    <path refid="library.mongodb.classpath"/>
   </path>
   
   <path id="syslogunity.runtime.module.classpath">
     <pathelement location="${syslogunity.testoutput.dir}"/>
     <pathelement location="${syslogunity.output.dir}"/>
-    <path refid="library.berkeley_db.classpath"/>
     <path refid="library.lucene.classpath"/>
+    <path refid="library.mongodb.classpath"/>
   </path>
   
   
