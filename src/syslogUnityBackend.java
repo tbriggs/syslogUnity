@@ -1,18 +1,28 @@
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
+import java.net.*;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.mongodb.Mongo;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.BasicDBObject;
+
 class syslogUnityBackend {
     public static void main(String[] args) {
         BlockingQueue<recordStruct> q = new LinkedBlockingQueue<recordStruct>();
+        final Mongo m;
+        try {
+            m = new Mongo("localhost", 27017);
+        } catch (UnknownHostException ex) {
+            System.out.print("UnknownHostException: " + ex.toString() + "\n");
+            return;
+        }
+
         syslogReceive logServer = new syslogReceive(q);
-        syslogProcess logPrinter = new syslogProcess(q);
+        syslogProcess logPrinter = new syslogProcess(q,m);
         new Thread(logServer).start();
         new Thread(logPrinter).start();
 
@@ -86,26 +96,33 @@ class syslogReceive implements Runnable {
 
 class syslogProcess implements Runnable {
     private final BlockingQueue<recordStruct> queue;
+    private final Mongo mongo;
 
-    syslogProcess(BlockingQueue<recordStruct> q) {
+    syslogProcess(BlockingQueue<recordStruct> q, Mongo m) {
         queue = q;
+        mongo = m;
     }
 
     public void run() {
+
+        DB logDB = mongo.getDB("logStore");
+        DBCollection logCollection = logDB.getCollection("logLines");
+
         try {
             while (loopControl.test) {
-                printLine(queue.take());
+                printLine(queue.take(), logCollection);
             }
         } catch (InterruptedException ex) {
             System.out.print("InterruptedException: " + ex.toString() + "\n");
         }
     }
 
-    void printLine(recordStruct logRecord) {
+    void printLine(recordStruct logRecord, DBCollection logCollection) {
         Date queueDate = new Date(logRecord.getEpoch());
         int queuePriority = logRecord.getPriority();
         InetAddress queueHost;
         String queueLogLine = logRecord.getLogLine();
+        BasicDBObject logLine = new BasicDBObject();
 
         try {
             queueHost = InetAddress.getByAddress(logRecord.getHost());
@@ -114,10 +131,11 @@ class syslogProcess implements Runnable {
             return;
         }
 
-        System.out.print("Date:" + queueDate.toString() +
-                "\nPri:" + queuePriority +
-                "\nIP:" + queueHost.getHostAddress() +
-                "\nData: " + queueLogLine + "\n");
+        logLine.put("Date", queueDate);
+        logLine.put("Priority", queuePriority);
+        logLine.put("IP", queueHost.getHostAddress());
+        logLine.put("Data", queueLogLine);
+        logCollection.insert(logLine);
     }
 }
 
