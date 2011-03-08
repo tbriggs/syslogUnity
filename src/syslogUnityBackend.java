@@ -26,11 +26,11 @@ class syslogUnityBackend {
         new Thread(logStore4).start();
         new Thread(logStore5).start();
 
-
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 try {
                     loopControl.test = false;
+                    System.out.print("Exiting gracefully...\n");
                 } catch (Exception ex) {
                     System.out.print("Exception:" + ex + "\n");
                 }
@@ -147,8 +147,7 @@ class syslogProcess implements Runnable {
                             + "'" + logRecord.host.getHostAddress() + "',"
                             + "'" + logRecord.data + "'"
                             + ")",
-                    Statement.RETURN_GENERATED_KEYS
-            );
+                    Statement.RETURN_GENERATED_KEYS);
             ResultSet rs = logLineSQL.getGeneratedKeys();
             if (rs.next()) {
                 logLineKey = rs.getLong(1);
@@ -162,7 +161,6 @@ class syslogProcess implements Runnable {
             System.out.print("SQLException: " + ex.toString() + "\n");
             return;
         }
-
 
         System.out.print("Inserted Successfully Key#" + logLineKey + "\n");
     }
