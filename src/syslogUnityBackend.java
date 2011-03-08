@@ -150,7 +150,9 @@ class syslogProcess implements Runnable {
                     Statement.RETURN_GENERATED_KEYS
             );
             ResultSet rs = logLineSQL.getGeneratedKeys();
-            logLineKey = rs.getLong(1);
+            if (rs.next()) {
+                logLineKey = rs.getLong(1);
+            }
             rs.close();
             logLineSQL.close();
         } catch (SQLException ex) {
