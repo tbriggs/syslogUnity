@@ -15,7 +15,7 @@ class syslogUnityBackend {
         BlockingQueue<recordStruct> q = new LinkedBlockingQueue<recordStruct>();
         final Mongo m;
         try {
-            m = new Mongo("localhost", 27017);
+            m = new Mongo("127.0.0.1", 27017);
         } catch (UnknownHostException ex) {
             System.out.print("UnknownHostException: " + ex.toString() + "\n");
             return;
