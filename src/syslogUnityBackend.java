@@ -15,7 +15,21 @@ class syslogUnityBackend {
         syslogProcess logPrinter = new syslogProcess(q);
         new Thread(logServer).start();
         new Thread(logPrinter).start();
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                try {
+                    loopControl.test = false;
+                } catch (Exception ex) {
+                    System.out.print("Exception:" + ex + "\n");
+                }
+            }
+        });
     }
+}
+
+class loopControl {
+    public static boolean test = true;
 }
 
 class syslogReceive implements Runnable {
@@ -32,13 +46,15 @@ class syslogReceive implements Runnable {
         try {
             syslog = new DatagramSocket(514);
             logEntry = new DatagramPacket(new byte[BUFFER_SIZE], BUFFER_SIZE);
-        } catch (SocketException e) {
+        } catch (SocketException ex) {
+            System.out.print("SocketException: " + ex.toString() + "\n");
         }
 
-        while (true) {
+        while (loopControl.test) {
             try {
                 syslog.receive(logEntry);
             } catch (IOException ex) {
+                System.out.print("IOException: " + ex.toString() + "\n");
             }
 
             InetAddress logHost = logEntry.getAddress();
@@ -46,6 +62,7 @@ class syslogReceive implements Runnable {
             try {
                 queue.put(addToQueue(logLine, logHost));
             } catch (InterruptedException ex) {
+                System.out.print("InterruptedException: " + ex.toString() + "\n");
             }
         }
     }
@@ -76,11 +93,11 @@ class syslogProcess implements Runnable {
 
     public void run() {
         try {
-            while (true) {
-                recordStruct logRecord = queue.take();
+            while (loopControl.test) {
                 printLine(queue.take());
             }
         } catch (InterruptedException ex) {
+            System.out.print("InterruptedException: " + ex.toString() + "\n");
         }
     }
 
@@ -92,7 +109,8 @@ class syslogProcess implements Runnable {
 
         try {
             queueHost = InetAddress.getByAddress(logRecord.getHost());
-        } catch (Exception UnknownHostException) {
+        } catch (Exception ex) {
+            System.out.print("UnknownHostException: " + ex.toString() + "\n");
             return;
         }
 
@@ -105,11 +123,11 @@ class syslogProcess implements Runnable {
 
 class recordStruct {
     public byte[] recordBytes = new byte[1024];
-    private ByteBuffer data = ByteBuffer.wrap(recordBytes);
+    ByteBuffer data = ByteBuffer.wrap(recordBytes);
 
-    recordStruct(byte[] rawData) {
-        data.put(rawData, 0, 1024);
-    }
+//    recordStruct(byte[] rawData) {
+//        data.put(rawData, 0, 1024);
+//    }
 
     recordStruct(InetAddress host, int priority, long epoch, String logLine) {
         byte[] stringBytes = logLine.getBytes();
@@ -119,43 +137,45 @@ class recordStruct {
         data.putInt(stringBytes.length);
         try {
             data.put(stringBytes);
-        } catch (Exception BufferOverflowException) {}
+        } catch (Exception ex) {
+            System.out.print("BufferOverflowException: " + ex.toString() + "\n");
+        }
 
     }
 
     public byte[] getHost() {
-        ByteBuffer bb = ByteBuffer.wrap(recordBytes,0,4);
+        ByteBuffer bb = ByteBuffer.wrap(recordBytes, 0, 4);
         byte[] temp = new byte[4];
         bb.get(temp);
         return temp;
     }
 
     public int getPriority() {
-        ByteBuffer bb = ByteBuffer.wrap(recordBytes,4,4);
+        ByteBuffer bb = ByteBuffer.wrap(recordBytes, 4, 4);
         return bb.getInt();
     }
 
     public long getEpoch() {
-        ByteBuffer bb = ByteBuffer.wrap(recordBytes,7,8);
+        ByteBuffer bb = ByteBuffer.wrap(recordBytes, 7, 8);
         return bb.getLong();
     }
 
     public String getLogLine() {
         int logLineLength = stringLength();
-        ByteBuffer bbstr = ByteBuffer.wrap(recordBytes,20,logLineLength);
+        ByteBuffer bbstr = ByteBuffer.wrap(recordBytes, 20, logLineLength);
         byte[] temp = new byte[logLineLength];
         bbstr.get(temp);
         return new String(temp);
     }
 
     public int stringLength() {
-        ByteBuffer bbint = ByteBuffer.wrap(recordBytes,16,4);
+        ByteBuffer bbint = ByteBuffer.wrap(recordBytes, 16, 4);
         return bbint.getInt();
     }
 
-    public byte[] trimmedBytes() {
-        return ByteBuffer.wrap(recordBytes,0,(20+stringLength())).array();
-    }
+//    public byte[] trimmedBytes() {
+//        return ByteBuffer.wrap(recordBytes,0,(20+stringLength())).array();
+//    }
 
 }
 
