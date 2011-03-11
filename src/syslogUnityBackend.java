@@ -1,12 +1,12 @@
 import java.io.File;
 import java.io.IOException;
 import java.net.*;
-import java.nio.ByteBuffer;
+//import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.sleepycat.je.*;
+//import com.sleepycat.je.*;
 
 import java.util.regex.Pattern;
 
@@ -21,7 +21,7 @@ class syslogUnityBackend {
 
     public static void main(String[] args) {
 
-        final File DB_DIR = new File("/var/lib/syslogUnity/store/");
+ //       final File DB_DIR = new File("/var/lib/syslogUnity/store/");
         final File INDEX_DIR = new File("/var/lib/syslogUnity/index");
 
         final PatternAnalyzer analyzer = new PatternAnalyzer(Version.LUCENE_30, Pattern.compile("\\W+"), true, null);
@@ -34,6 +34,7 @@ class syslogUnityBackend {
         }
         writer.setRAMBufferSizeMB(8);
 
+        /*
         EnvironmentConfig envConfig = new EnvironmentConfig();
         envConfig.setTransactional(false);
         envConfig.setAllowCreate(true);
@@ -52,15 +53,16 @@ class syslogUnityBackend {
         DatabaseEntry seqKey = new DatabaseEntry("sequencecounter".getBytes());
 
         final Sequence seq = store.openSequence(null, seqKey, seqConfig);
+        */
 
         BlockingQueue<recordStruct> q = new LinkedBlockingQueue<recordStruct>();
 
         syslogReceive logServer = new syslogReceive(q);
-        syslogProcess logStore1 = new syslogProcess(q, store, seq, writer);
-        syslogProcess logStore2 = new syslogProcess(q, store, seq, writer);
-        syslogProcess logStore3 = new syslogProcess(q, store, seq, writer);
-        syslogProcess logStore4 = new syslogProcess(q, store, seq, writer);
-        syslogProcess logStore5 = new syslogProcess(q, store, seq, writer);
+        syslogProcess logStore1 = new syslogProcess(q, /*store, seq,*/ writer);
+        syslogProcess logStore2 = new syslogProcess(q, /*store, seq,*/ writer);
+        syslogProcess logStore3 = new syslogProcess(q, /*store, seq,*/ writer);
+        syslogProcess logStore4 = new syslogProcess(q, /*store, seq,*/ writer);
+        syslogProcess logStore5 = new syslogProcess(q, /*store, seq,*/ writer);
 
         new Thread(logServer).start();
         new Thread(logStore1).start();
@@ -141,14 +143,14 @@ class syslogReceive implements Runnable {
 class syslogProcess implements Runnable {
 
     private final BlockingQueue<recordStruct> queue;
-    private final Database store;
-    private final Sequence seq;
+    /*private final Database store;
+    private final Sequence seq; */
     private final IndexWriter writer;
 
-    syslogProcess(BlockingQueue<recordStruct> q, Database st, Sequence sq, IndexWriter wr) {
+    syslogProcess(BlockingQueue<recordStruct> q, /*Database st, Sequence sq,*/ IndexWriter wr) {
         queue = q;
-        store = st;
-        seq = sq;
+        /*store = st;
+        seq = sq;*/
         writer = wr;
     }
 
@@ -157,16 +159,16 @@ class syslogProcess implements Runnable {
 
         try {
             while (loopControl.test) {
-                storeLine(queue.take(), store, seq);
+                storeLine(queue.take()/*, store, seq*/);
             }
         } catch (InterruptedException ex) {
             System.out.print("InterruptedException: " + ex.toString() + "\n");
         }
     }
 
-    void storeLine(recordStruct logRecord, Database store, Sequence seq) {
+    void storeLine(recordStruct logRecord/*, Database store, Sequence seq*/) {
 
-        long sk = seq.get(null, 1);
+        /*long sk = seq.get(null, 1);
         byte[] k = ByteBuffer.allocate(8).putLong(sk).array();
         byte[] d = logRecord.getBytes();
 
@@ -180,11 +182,13 @@ class syslogProcess implements Runnable {
         } catch (Exception dbe) {
             System.out.print("Couldn't add record to database\n");
             return;
-        }
+        }*/
 
         Document doc = new Document();
-        doc.add(new Field("id", Long.toString(sk), Field.Store.YES, Field.Index.NOT_ANALYZED));
-        doc.add(new Field("data", logRecord.data, Field.Store.NO, Field.Index.ANALYZED));
+        doc.add(new Field("host", logRecord.host.getHostName(), Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("date", logRecord.date.toString(), Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("priority", Integer.toString(logRecord.priority), Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("data", logRecord.data, Field.Store.YES, Field.Index.ANALYZED));
 
         try {
             writer.addDocument(doc);
@@ -192,7 +196,7 @@ class syslogProcess implements Runnable {
             System.out.print("IOException: " + ex + "\n");
         }
 
-        System.out.print("Indexed Line #" + sk + ", " + queue.size() + " remain\n");
+        System.out.print("remain\n");
     }
 }
 
@@ -209,7 +213,7 @@ class recordStruct {
         data = s;
     }
 
-    public byte[] getBytes() {
+    /*public byte[] getBytes() {
         byte[] recordBytes = new byte[1024];
         ByteBuffer bbdata = ByteBuffer.wrap(recordBytes);
         byte[] stringBytes = data.getBytes();
@@ -229,6 +233,6 @@ class recordStruct {
 
         return ByteBuffer.wrap(recordBytes, 0, (16 + data.length())).array();
 
-    }
+    }*/
 }
 
