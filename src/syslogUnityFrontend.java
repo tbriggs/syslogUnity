@@ -37,7 +37,7 @@ public class syslogUnityFrontend {
         Query query = parser.parse(input);
         TopDocs hits = searcher.search(query, 100);
 
-        System.out.print(hits.totalHits + " Hits\n");
+        System.out.print(hits.totalHits + " Hits for " + input + "\n");
 
         // Iterate through the results:
         for (int i = 0; i < hits.totalHits; i++) {
