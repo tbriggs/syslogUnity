@@ -32,7 +32,7 @@ class syslogUnityBackend {
             System.out.print("IOException: " + ex + "\n");
             return;
         }
-            writer.setRAMBufferSizeMB(8);
+        writer.setRAMBufferSizeMB(8);
 
         EnvironmentConfig envConfig = new EnvironmentConfig();
         envConfig.setTransactional(false);
@@ -56,11 +56,11 @@ class syslogUnityBackend {
         BlockingQueue<recordStruct> q = new LinkedBlockingQueue<recordStruct>();
 
         syslogReceive logServer = new syslogReceive(q);
-        syslogProcess logStore1 = new syslogProcess(q,store,seq,writer);
-        syslogProcess logStore2 = new syslogProcess(q,store,seq,writer);
-        syslogProcess logStore3 = new syslogProcess(q,store,seq,writer);
-        syslogProcess logStore4 = new syslogProcess(q,store,seq,writer);
-        syslogProcess logStore5 = new syslogProcess(q,store,seq,writer);
+        syslogProcess logStore1 = new syslogProcess(q, store, seq, writer);
+        syslogProcess logStore2 = new syslogProcess(q, store, seq, writer);
+        syslogProcess logStore3 = new syslogProcess(q, store, seq, writer);
+        syslogProcess logStore4 = new syslogProcess(q, store, seq, writer);
+        syslogProcess logStore5 = new syslogProcess(q, store, seq, writer);
 
         new Thread(logServer).start();
         new Thread(logStore1).start();
@@ -155,7 +155,6 @@ class syslogProcess implements Runnable {
     public void run() {
 
 
-
         try {
             while (loopControl.test) {
                 storeLine(queue.take(), store, seq);
@@ -188,7 +187,7 @@ class syslogProcess implements Runnable {
         doc.add(new Field("data", logRecord.data, Field.Store.NO, Field.Index.ANALYZED));
 
         try {
-        writer.addDocument(doc);
+            writer.addDocument(doc);
         } catch (IOException ex) {
             System.out.print("IOException: " + ex + "\n");
         }
@@ -228,7 +227,7 @@ class recordStruct {
                     "ByteBuffer:" + bbdata.toString() + "\n\n");
         }
 
-        return ByteBuffer.wrap(recordBytes,0,(16+data.length())).array();
+        return ByteBuffer.wrap(recordBytes, 0, (16 + data.length())).array();
 
     }
 }
