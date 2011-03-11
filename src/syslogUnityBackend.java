@@ -161,9 +161,11 @@ class syslogProcess implements Runnable {
             while (loopControl.test) {
                 storeLine(queue.take()/*, store, seq*/);
             }
-        } catch (InterruptedException ex) {
-            System.out.print("InterruptedException: " + ex.toString() + "\n");
+            writer.close();
+        } catch (Exception ex) {
+            System.out.print("Exception: " + ex.toString() + "\n");
         }
+
     }
 
     void storeLine(recordStruct logRecord/*, Database store, Sequence seq*/) {
