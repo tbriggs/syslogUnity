@@ -1,23 +1,66 @@
+import java.io.File;
 import java.io.IOException;
 import java.net.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import java.sql.*;
+import com.sleepycat.je.*;
+
+import java.util.regex.Pattern;
+
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.analysis.miscellaneous.PatternAnalyzer;
+import org.apache.lucene.util.Version;
+import org.apache.lucene.store.FSDirectory;
 
 class syslogUnityBackend {
+
     public static void main(String[] args) {
+
+        final File DB_DIR = new File("/var/lib/syslogUnity/store/");
+        final File INDEX_DIR = new File("/var/lib/syslogUnity/index");
+
+        final PatternAnalyzer analyzer = new PatternAnalyzer(Version.LUCENE_30, Pattern.compile("\\W+"), true, null);
+        final IndexWriter writer;
+        try {
+            writer = new IndexWriter(FSDirectory.open(INDEX_DIR), analyzer, IndexWriter.MaxFieldLength.LIMITED);
+        } catch (IOException ex) {
+            System.out.print("IOException: " + ex + "\n");
+            return;
+        }
+            writer.setRAMBufferSizeMB(8);
+
+        EnvironmentConfig envConfig = new EnvironmentConfig();
+        envConfig.setTransactional(false);
+        envConfig.setAllowCreate(true);
+        envConfig.setCacheSize(20971520);
+
+        final Environment env = new Environment(DB_DIR, envConfig);
+
+        DatabaseConfig storeConfig = new DatabaseConfig();
+        storeConfig.setAllowCreate(true);
+        storeConfig.setReadOnly(false);
+
+        final Database store = env.openDatabase(null, "store.db", storeConfig);
+
+        SequenceConfig seqConfig = new SequenceConfig();
+        seqConfig.setAllowCreate(true);
+        DatabaseEntry seqKey = new DatabaseEntry("sequencecounter".getBytes());
+
+        final Sequence seq = store.openSequence(null, seqKey, seqConfig);
+
         BlockingQueue<recordStruct> q = new LinkedBlockingQueue<recordStruct>();
 
         syslogReceive logServer = new syslogReceive(q);
-        syslogProcess logStore1 = new syslogProcess(q);
-        syslogProcess logStore2 = new syslogProcess(q);
-        syslogProcess logStore3 = new syslogProcess(q);
-        syslogProcess logStore4 = new syslogProcess(q);
-        syslogProcess logStore5 = new syslogProcess(q);
+        syslogProcess logStore1 = new syslogProcess(q,store,seq,writer);
+        syslogProcess logStore2 = new syslogProcess(q,store,seq,writer);
+        syslogProcess logStore3 = new syslogProcess(q,store,seq,writer);
+        syslogProcess logStore4 = new syslogProcess(q,store,seq,writer);
+        syslogProcess logStore5 = new syslogProcess(q,store,seq,writer);
 
         new Thread(logServer).start();
         new Thread(logStore1).start();
@@ -96,73 +139,60 @@ class syslogReceive implements Runnable {
 }
 
 class syslogProcess implements Runnable {
-    private final BlockingQueue<recordStruct> queue;
 
-    syslogProcess(BlockingQueue<recordStruct> q) {
+    private final BlockingQueue<recordStruct> queue;
+    private final Database store;
+    private final Sequence seq;
+    private final IndexWriter writer;
+
+    syslogProcess(BlockingQueue<recordStruct> q, Database st, Sequence sq, IndexWriter wr) {
         queue = q;
+        store = st;
+        seq = sq;
+        writer = wr;
     }
 
     public void run() {
-        Connection dbConnection;
 
-        String userName = "syslogUnity";
-        String password = "syslogUnity";
-        String url = "jdbc:mysql://localhost/syslogUnity";
 
-        try {
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-            dbConnection = DriverManager.getConnection(url, userName, password);
-        } catch (Exception ex) {
-            System.out.print("Exception: " + ex.toString() + "\n");
-            return;
-        }
 
         try {
             while (loopControl.test) {
-                storeLine(queue.take(), dbConnection);
+                storeLine(queue.take(), store, seq);
             }
         } catch (InterruptedException ex) {
             System.out.print("InterruptedException: " + ex.toString() + "\n");
         }
     }
 
-    void storeLine(recordStruct logRecord, Connection dbConnection) {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        Statement logLineSQL;
-        long logLineKey;
+    void storeLine(recordStruct logRecord, Database store, Sequence seq) {
+
+        long sk = seq.get(null, 1);
+        byte[] k = ByteBuffer.allocate(8).putLong(sk).array();
+        byte[] d = logRecord.getBytes();
+
+        DatabaseEntry storeKeyDBT = new DatabaseEntry(k);
+        storeKeyDBT.setSize(8);
+        DatabaseEntry storeDataDBT = new DatabaseEntry(d);
+        storeDataDBT.setSize(d.length);
 
         try {
-            logLineSQL = dbConnection.createStatement();
-        } catch (SQLException ex) {
-            System.out.print("SQLException: " + ex.toString() + "\n");
+            store.put(null, storeKeyDBT, storeDataDBT);
+        } catch (Exception dbe) {
+            System.out.print("Couldn't add record to database\n");
             return;
         }
 
+        Document doc = new Document();
+        doc.add(new Field("id", Long.toString(sk), Field.Store.YES, Field.Index.NOT_ANALYZED));
+        doc.add(new Field("data", logRecord.data, Field.Store.NO, Field.Index.ANALYZED));
+
         try {
-            logLineSQL.executeUpdate(
-                    "INSERT INTO logLines (date, priority, host, data)"
-                            + "VALUES ("
-                            + "'" + dateFormat.format(logRecord.date) + "',"
-                            + logRecord.priority + ","
-                            + "'" + logRecord.host.getHostAddress() + "',"
-                            + "'" + logRecord.data + "'"
-                            + ")",
-                    Statement.RETURN_GENERATED_KEYS);
-            ResultSet rs = logLineSQL.getGeneratedKeys();
-            if (rs.next()) {
-                logLineKey = rs.getLong(1);
-            } else {
-                System.out.print("SQL rs error\n");
-                return;
-            }
-            rs.close();
-            logLineSQL.close();
-        } catch (SQLException ex) {
-            System.out.print("SQLException: " + ex.toString() + "\n");
+        writer.addDocument(doc);
+        } catch (IOException ex) {
+            System.out.print("IOException: " + ex + "\n");
             return;
         }
-
-        System.out.print("Inserted Successfully Key#" + logLineKey + "\n");
     }
 }
 
@@ -177,6 +207,28 @@ class recordStruct {
         priority = p;
         host = i;
         data = s;
+    }
+
+    public byte[] getBytes() {
+        byte[] recordBytes = new byte[1024];
+        ByteBuffer bbdata = ByteBuffer.wrap(recordBytes);
+        byte[] stringBytes = data.getBytes();
+
+        bbdata.put(host.getAddress());
+        bbdata.putInt(priority);
+        bbdata.putLong(date.getTime());
+
+        try {
+            bbdata.put(stringBytes);
+        } catch (Exception BufferOverflowException) {
+            System.out.print("BufferOverflowException!\n" +
+                    "StringLen:" + stringBytes.length + "\n" +
+                    "ByteBufferLen:" + bbdata.array().length + "\n" +
+                    "ByteBuffer:" + bbdata.toString() + "\n\n");
+        }
+
+        return ByteBuffer.wrap(recordBytes,0,(16+data.length())).array();
+
     }
 }
 
