@@ -191,8 +191,9 @@ class syslogProcess implements Runnable {
         writer.addDocument(doc);
         } catch (IOException ex) {
             System.out.print("IOException: " + ex + "\n");
-            return;
         }
+
+        System.out.print("Indexed Line #" + sk + "\n");
     }
 }
 
