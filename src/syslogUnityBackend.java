@@ -193,7 +193,7 @@ class syslogProcess implements Runnable {
             System.out.print("IOException: " + ex + "\n");
         }
 
-        System.out.print("Indexed Line #" + sk + "\n");
+        System.out.print("Indexed Line #" + sk + + ", " + queue.size() + " remain\n");
     }
 }
 
