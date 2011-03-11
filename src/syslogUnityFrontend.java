@@ -22,7 +22,7 @@ public class syslogUnityFrontend {
 
         final PatternAnalyzer analyzer = new PatternAnalyzer(Version.LUCENE_30, Pattern.compile("\\W+"), true, null);
 
-        IndexSearcher isearcher = new IndexSearcher(FSDirectory.open(new File(index)));
+        IndexSearcher searcher = new IndexSearcher(FSDirectory.open(new File(index)));
 
         // Parse a simple query that searches for "text":
         QueryParser parser = new QueryParser(Version.LUCENE_30, "data", analyzer);
@@ -35,15 +35,17 @@ public class syslogUnityFrontend {
         input = input.trim();
 
         Query query = parser.parse(input);
-        TopDocs hits = isearcher.search(query, 100);
+        TopDocs hits = searcher.search(query, 100);
+
+        System.out.print(hits.totalHits + " Hits\n");
 
         // Iterate through the results:
         for (int i = 0; i < hits.totalHits; i++) {
-            Document hitDoc = isearcher.doc(hits.scoreDocs[i].doc);
-            String id = hitDoc.get("id");
-            System.out.print("Matched in: " + id + "\n");
+            Document hitDoc = searcher.doc(hits.scoreDocs[i].doc);
+            String data = hitDoc.get("data");
+            System.out.print("Matched in: " + data + "\n");
         }
 
-        isearcher.close();
+        searcher.close();
     }
 }
