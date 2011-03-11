@@ -86,89 +86,92 @@
   
   <!-- Project Libraries -->
   
-  <path id="library.lucene.classpath">
-    <fileset dir="${basedir}/lucene-3.0.3">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/analyzers/common">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/analyzers/smartcn">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/ant">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/benchmark">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/collation">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/db/bdb">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/db/bdb-je">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/fast-vector-highlighter">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/highlighter">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/instantiated">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/lucli">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/memory">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/misc">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/queries">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/queryparser">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/regex">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/remote">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/snowball">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/spatial">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/spellchecker">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/surround">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/swing">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/wikipedia">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/wordnet">
-      <patternset refid="library.patterns"/>
-    </fileset>
-    <fileset dir="${basedir}/lucene-3.0.3/contrib/xml-query-parser">
-      <patternset refid="library.patterns"/>
-    </fileset>
+  <path id="library.bdb.classpath">
+    <pathelement location="${basedir}/bdb/je-4.1.7.jar"/>
   </path>
   
-  <path id="library.mongodb.classpath">
-    <pathelement location="${basedir}/mongo/mongo-2.4.jar"/>
+  <path id="library.lucene.classpath">
+    <fileset dir="${basedir}/lucene">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/analyzers/common">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/analyzers/smartcn">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/ant">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/benchmark">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/collation">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/db/bdb">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/db/bdb-je">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/fast-vector-highlighter">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/highlighter">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/instantiated">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/lucli">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/memory">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/misc">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/queries">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/queryparser">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/regex">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/remote">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/snowball">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/spatial">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/spellchecker">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/surround">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/swing">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/wikipedia">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/wordnet">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/contrib/xml-query-parser">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <fileset dir="${basedir}/lucene/lib">
+      <patternset refid="library.patterns"/>
+    </fileset>
   </path>
   
   <!-- Modules -->
@@ -195,27 +198,27 @@
   <path id="syslogunity.module.production.classpath">
     <path refid="${module.jdk.classpath.syslogunity}"/>
     <path refid="library.lucene.classpath"/>
-    <path refid="library.mongodb.classpath"/>
+    <path refid="library.bdb.classpath"/>
   </path>
   
   <path id="syslogunity.runtime.production.module.classpath">
     <pathelement location="${syslogunity.output.dir}"/>
     <path refid="library.lucene.classpath"/>
-    <path refid="library.mongodb.classpath"/>
+    <path refid="library.bdb.classpath"/>
   </path>
   
   <path id="syslogunity.module.classpath">
     <path refid="${module.jdk.classpath.syslogunity}"/>
     <pathelement location="${syslogunity.output.dir}"/>
     <path refid="library.lucene.classpath"/>
-    <path refid="library.mongodb.classpath"/>
+    <path refid="library.bdb.classpath"/>
   </path>
   
   <path id="syslogunity.runtime.module.classpath">
     <pathelement location="${syslogunity.testoutput.dir}"/>
     <pathelement location="${syslogunity.output.dir}"/>
     <path refid="library.lucene.classpath"/>
-    <path refid="library.mongodb.classpath"/>
+    <path refid="library.bdb.classpath"/>
   </path>
   
   
