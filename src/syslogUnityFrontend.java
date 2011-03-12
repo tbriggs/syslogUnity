@@ -35,9 +35,9 @@ public class syslogUnityFrontend {
         CheckIndex.Status res = check.checkIndex();
 
         System.out.print("Dir: " + res.dir.toString() + "\n" +
-                         "Clean: " + res.clean + "\n" +
-                         "seg:" + res.numSegments + " bad:" + res.numBadSegments + "\n" +
-                         "format: " + res.segmentFormat + "\n");
+                "Clean: " + res.clean + "\n" +
+                "seg:" + res.numSegments + " bad:" + res.numBadSegments + "\n" +
+                "format: " + res.segmentFormat + "\n\n");
 
 
         // Parse a simple query that searches for "text":
@@ -54,15 +54,17 @@ public class syslogUnityFrontend {
 
         Query query = parser.parse(input);
 
-        TopDocs hits = searcher.search(query, 1000);
+        TopScoreDocCollector collector =
+                TopScoreDocCollector.create(25, true);
+        searcher.search(query, collector);
+        ScoreDoc[] hits = collector.topDocs().scoreDocs;
 
-        System.out.print(hits.totalHits + " Hits for '" + query.toString() + "'\n");
 
-        // Iterate through the results:
-        for (int i = 0; i < hits.totalHits; i++) {
-            Document hitDoc = searcher.doc(hits.scoreDocs[i].doc);
-            String data = hitDoc.get("data");
-            System.out.print("Matched in: " + data + "\n");
+        System.out.println("Found " + hits.length + " hits.");
+        for (int i = 0; i < hits.length; ++i) {
+            int docId = hits[i].doc;
+            Document d = searcher.doc(docId);
+            System.out.println((i + 1) + ". " + d.get("title"));
         }
 
 
