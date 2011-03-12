@@ -31,7 +31,7 @@ public class syslogUnityFrontend {
 
 
         // Parse a simple query that searches for "text":
-        QueryParser parser = new QueryParser(Version.LUCENE_30, "data", analyzer);
+        QueryParser parser = new QueryParser(Version.LUCENE_30, "priority", analyzer);
 
         System.out.println("Enter query: ");
 
@@ -49,7 +49,7 @@ public class syslogUnityFrontend {
         // Iterate through the results:
         for (int i = 0; i < hits.totalHits; i++) {
             Document hitDoc = searcher.doc(hits.scoreDocs[i].doc);
-            String data = hitDoc.get("data");
+            String data = hitDoc.get("priority");
             System.out.print("Matched in: " + data + "\n");
         }
 
