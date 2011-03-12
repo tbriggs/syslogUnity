@@ -34,7 +34,7 @@ public class syslogUnityFrontend {
 
         CheckIndex.Status res = check.checkIndex();
 
-        System.out.print("Dir: " + res.dir + "\n" +
+        System.out.print("Dir: " + res.dir.toString() + "\n" +
                          "Clean: " + res.clean + "\n" +
                          "seg:" + res.numSegments + " bad:" + res.numBadSegments + "\n" +
                          "format: " + res.segmentFormat + "\n");
