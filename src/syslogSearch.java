@@ -102,7 +102,12 @@ class syslogSearch implements Runnable {
                 }
             }
 
-            BooleanQuery bq = new  BooleanQuery();
+            System.out.print("Split Objects\n");
+
+            BooleanQuery bq = new BooleanQuery();
+
+            System.out.print("Created BQ\n");
+
 
             if (!dateStartField.isEmpty()) {
                 dateStart = Long.getLong(dateStartField);
