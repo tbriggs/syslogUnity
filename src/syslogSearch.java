@@ -50,7 +50,7 @@ class syslogSearch implements Runnable {
 
     public void run() {
 
- //       try {
+        try {
 
             BufferedReader searchInput = new BufferedReader(new InputStreamReader(searchSocket.getInputStream()));
 
@@ -145,9 +145,9 @@ class syslogSearch implements Runnable {
 
             searchReply.close();
             searchSocket.close();
- //       } catch (Exception ex) {
- //           System.out.print("Exception: " + ex + "\n");
- //       }
+        } catch (Exception ex) {
+            System.out.print("Exception: " + ex + "\n");
+        }
 
     }
 
