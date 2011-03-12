@@ -34,7 +34,10 @@ public class syslogUnityFrontend {
 
         CheckIndex.Status res = check.checkIndex();
 
-        System.out.print("Dir: " + res.toString() + "\n");
+        System.out.print("Dir: " + res.dir + "\n" +
+                         "Clean: " + res.clean + "\n" +
+                         "seg:" + res.numSegments + " bad:" + res.numBadSegments + "\n" +
+                         "format: " + res.segmentFormat + "\n");
 
 
         // Parse a simple query that searches for "text":
