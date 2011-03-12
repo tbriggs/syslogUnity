@@ -39,8 +39,12 @@ class searchServer implements Runnable {
             String[] searchQuery = new String[5];
             int i = 0;
 
-            while (!searchInput.ready()) {
+            while (i < 5) {
                 searchQuery[i] = searchInput.readLine().trim();
+                if (searchQuery[i].equals("\n") ||
+                    searchQuery[i].equals("\r\n") ||
+                    searchQuery[i].isEmpty())
+                    break;
                 i++;
             }
 
