@@ -52,7 +52,7 @@ class syslogProcess implements Runnable {
     void storeLine(recordStruct logRecord) {
 
         Document doc = new Document();
-        doc.add(new Field("host", logRecord.host.getHostName(), Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field("host", logRecord.host.getHostName(), Field.Store.YES, Field.Index.NOT_ANALYZED));
         doc.add(new NumericField("date", Field.Store.YES, true).setLongValue(logRecord.date.getTime()));
         doc.add(new NumericField("priority", Field.Store.YES, true).setIntValue(logRecord.priority));
         doc.add(new Field("data", logRecord.data, Field.Store.YES, Field.Index.ANALYZED));
