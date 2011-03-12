@@ -108,6 +108,7 @@ class syslogSearch implements Runnable {
                     dateEnd = new Date().getTime();
                 else
                     dateEnd = Long.getLong(dateEndField);
+                System.out.print("s:" + dateStart + " e:" + dateEnd + "\n");
                 bq.add(NumericRangeQuery.newLongRange("date", dateStart, dateEnd, true, true), BooleanClause.Occur.MUST);
             }
 
@@ -145,6 +146,7 @@ class syslogSearch implements Runnable {
             searchSocket.close();
         } catch (Exception ex) {
             System.out.print("Exception: " + ex + "\n");
+            return;
         }
 
     }
