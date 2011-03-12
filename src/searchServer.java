@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 
 class searchServer implements Runnable {
 
-    final Pattern matchData = Pattern.compile("^data:", Pattern.CASE_INSENSITIVE);
+    final Pattern matchData = Pattern.compile("data:", Pattern.CASE_INSENSITIVE);
     final Pattern matchHostname = Pattern.compile("^hostname:", Pattern.CASE_INSENSITIVE);
     final Pattern matchPriority = Pattern.compile("^priority:", Pattern.CASE_INSENSITIVE);
     final Pattern matchDateStart = Pattern.compile("^datestart:", Pattern.CASE_INSENSITIVE);
