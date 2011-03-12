@@ -50,22 +50,24 @@ class searchServer implements Runnable {
             String dateEndField = null;
             String dataField = null;
 
-            final Pattern matchData = Pattern.compile("^data:", Pattern.CASE_INSENSITIVE);
-            final Pattern matchHostname = Pattern.compile("^hostname:", Pattern.CASE_INSENSITIVE);
-            final Pattern matchPriority = Pattern.compile("^priority:", Pattern.CASE_INSENSITIVE);
-            final Pattern matchDateStart = Pattern.compile("^datestart:", Pattern.CASE_INSENSITIVE);
-            final Pattern matchDateEnd = Pattern.compile("^dateend:", Pattern.CASE_INSENSITIVE);
+            Pattern matchData = Pattern.compile("^data:", Pattern.CASE_INSENSITIVE);
+            Pattern matchHostname = Pattern.compile("^hostname:", Pattern.CASE_INSENSITIVE);
+            Pattern matchPriority = Pattern.compile("^priority:", Pattern.CASE_INSENSITIVE);
+            Pattern matchDateStart = Pattern.compile("^datestart:", Pattern.CASE_INSENSITIVE);
+            Pattern matchDateEnd = Pattern.compile("^dateend:", Pattern.CASE_INSENSITIVE);
+
+
 
             for (int n = 0; n < i; n++) {
-                if (matchData.matcher(searchQuery[n].trim()).matches()) {
+                if (matchData.matcher(searchQuery[n]).find()) {
                     dataField = searchQuery[n].substring(5).trim();
-                } else if (matchHostname.matcher(searchQuery[n]).matches()) {
+                } else if (matchHostname.matcher(searchQuery[n]).find()) {
                     hostnameField = searchQuery[n].substring(9).trim();
-                } else if (matchPriority.matcher(searchQuery[n]).matches()) {
+                } else if (matchPriority.matcher(searchQuery[n]).find()) {
                     priorityField = searchQuery[n].substring(9).trim();
-                } else if (matchDateStart.matcher(searchQuery[n]).matches()) {
+                } else if (matchDateStart.matcher(searchQuery[n]).find()) {
                     dateStartField = searchQuery[n].substring(10).trim();
-                } else if (matchDateEnd.matcher(searchQuery[n]).matches()) {
+                } else if (matchDateEnd.matcher(searchQuery[n]).find()) {
                     dateEndField = searchQuery[n].substring(8).trim();
                 }
             }
