@@ -6,7 +6,6 @@ import java.util.regex.Pattern;
 
 import org.apache.lucene.analysis.miscellaneous.PatternAnalyzer;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.util.Version;
 import org.apache.lucene.store.FSDirectory;
 
@@ -18,8 +17,6 @@ class syslogUnityBackend {
         final File INDEX_DIR = new File("/var/lib/syslogUnity/index");
         final PatternAnalyzer analyzer = new PatternAnalyzer(Version.LUCENE_30, Pattern.compile("\\W+"), true, null);
         final IndexWriter writer;
-
-        QueryParser parser = new QueryParser(Version.LUCENE_30, "data", analyzer);
 
         try {
             writer = new IndexWriter(FSDirectory.open(INDEX_DIR), analyzer, IndexWriter.MaxFieldLength.LIMITED);
@@ -37,7 +34,7 @@ class syslogUnityBackend {
         syslogProcess logStore3 = new syslogProcess(q, writer);
         syslogProcess logStore4 = new syslogProcess(q, writer);
         syslogProcess logStore5 = new syslogProcess(q, writer);
-        searchServer  logSearch = new searchServer();
+        searchServer  logSearch = new searchServer(writer, analyzer);
 
         new Thread(logServer).start();
         new Thread(logStore1).start();
