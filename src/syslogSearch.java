@@ -104,7 +104,7 @@ class syslogSearch implements Runnable {
 
             if (dateStartField != null) {
                 dateStart = Long.getLong(dateStartField);
-                if (dateEndField.isEmpty())
+                if (dateEndField == null)
                     dateEnd = new Date().getTime();
                 else
                     dateEnd = Long.getLong(dateEndField);
