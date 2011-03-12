@@ -57,8 +57,7 @@ class searchServer implements Runnable {
             final Pattern matchDateEnd = Pattern.compile("^dateend:", Pattern.CASE_INSENSITIVE);
 
             for (int n = 0; n < i; n++) {
-                if (searchQuery[n].equals("\n")) break;
-                else if (searchQuery[n].contains("data:")) {
+                if (matchData.matcher(searchQuery[n].trim()).matches()) {
                     dataField = searchQuery[n].substring(5).trim();
                 } else if (matchHostname.matcher(searchQuery[n]).matches()) {
                     hostnameField = searchQuery[n].substring(9).trim();
