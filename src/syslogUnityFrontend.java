@@ -23,14 +23,14 @@ public class syslogUnityFrontend {
 
     public static void main(String[] args) throws Exception {
 
-        String index = "/var/lib/syslogUnity/index";
+        File index = new File("/var/lib/syslogUnity/index");
 
         //final PatternAnalyzer analyzer = new PatternAnalyzer(Version.LUCENE_30, Pattern.compile("\\W+"), true, null);
 
-        IndexReader reader = IndexReader.open(FSDirectory.open(new File(index)), true);
+        IndexReader reader = IndexReader.open(FSDirectory.open(index), true);
         Searcher searcher = new IndexSearcher(reader);
         Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
-        CheckIndex check = new CheckIndex(FSDirectory.open(new File(index)));
+        CheckIndex check = new CheckIndex(FSDirectory.open(index));
 
         CheckIndex.Status res = check.checkIndex();
 
