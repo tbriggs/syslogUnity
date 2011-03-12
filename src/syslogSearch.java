@@ -66,6 +66,8 @@ class syslogSearch implements Runnable {
                 i++;
             }
 
+            System.out.print(i + " Objects in array\n");
+
             String hostnameField = null;
             String priorityField = null;
             String dateStartField = null;
@@ -109,19 +111,22 @@ class syslogSearch implements Runnable {
                 else
                     dateEnd = Long.getLong(dateEndField);
                 bq.add(NumericRangeQuery.newLongRange("date", dateStart, dateEnd, true, true), BooleanClause.Occur.MUST);
-
+                System.out.print("Adding Date BQ\n");
             }
 
             if (!hostnameField.isEmpty()) {
                 bq.add(hostnameParser.parse(hostnameField), BooleanClause.Occur.MUST);
+                System.out.print("Adding Host BQ\n");
             }
 
             if (!priorityField.isEmpty()) {
                 bq.add(priorityParser.parse(priorityField), BooleanClause.Occur.MUST);
+                System.out.print("Adding Pri BQ\n");
             }
 
             if (!dataField.isEmpty()) {
                 bq.add(dataParser.parse(dataField), BooleanClause.Occur.MUST);
+                System.out.print("Adding Data BQ\n");
             }
 
             PrintWriter searchReply = new PrintWriter(searchSocket.getOutputStream(), true);
