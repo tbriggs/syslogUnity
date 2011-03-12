@@ -22,12 +22,6 @@ import java.util.regex.Pattern;
 
 class searchServer implements Runnable {
 
-    final Pattern matchData = Pattern.compile("data:", Pattern.CASE_INSENSITIVE);
-    final Pattern matchHostname = Pattern.compile("^hostname:", Pattern.CASE_INSENSITIVE);
-    final Pattern matchPriority = Pattern.compile("^priority:", Pattern.CASE_INSENSITIVE);
-    final Pattern matchDateStart = Pattern.compile("^datestart:", Pattern.CASE_INSENSITIVE);
-    final Pattern matchDateEnd = Pattern.compile("^dateend:", Pattern.CASE_INSENSITIVE);
-
     public void run() {
 
         try {
@@ -42,17 +36,25 @@ class searchServer implements Runnable {
             while (i < 5) {
                 searchQuery[i] = searchInput.readLine().trim();
                 if (searchQuery[i].equals("\n") ||
-                    searchQuery[i].equals("\r\n") ||
-                    searchQuery[i].isEmpty())
+                        searchQuery[i].equals("\r\n") ||
+                        searchQuery[i].isEmpty())
                     break;
                 i++;
             }
+
+            System.out.print(i + " elements in array\n");
 
             String hostnameField = null;
             String priorityField = null;
             String dateStartField = null;
             String dateEndField = null;
             String dataField = null;
+
+            final Pattern matchData = Pattern.compile("^data:", Pattern.CASE_INSENSITIVE);
+            final Pattern matchHostname = Pattern.compile("^hostname:", Pattern.CASE_INSENSITIVE);
+            final Pattern matchPriority = Pattern.compile("^priority:", Pattern.CASE_INSENSITIVE);
+            final Pattern matchDateStart = Pattern.compile("^datestart:", Pattern.CASE_INSENSITIVE);
+            final Pattern matchDateEnd = Pattern.compile("^dateend:", Pattern.CASE_INSENSITIVE);
 
             for (int n = 0; n < i; n++) {
                 if (searchQuery[n].equals("\n")) break;
