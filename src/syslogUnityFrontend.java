@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.io.*;
 //import java.util.regex.Pattern;
 
@@ -5,6 +6,7 @@ import org.apache.lucene.analysis.Analyzer;
 //import org.apache.lucene.analysis.miscellaneous.PatternAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.CheckIndex;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.*;
@@ -28,6 +30,11 @@ public class syslogUnityFrontend {
         IndexReader reader = IndexReader.open(FSDirectory.open(new File(index)), true);
         Searcher searcher = new IndexSearcher(reader);
         Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
+        CheckIndex check = new CheckIndex(FSDirectory.open(new File(index)));
+
+        CheckIndex.Status res = check.checkIndex();
+
+        System.out.print("Dir: " + res.toString() + "\n");
 
 
         // Parse a simple query that searches for "text":
@@ -36,9 +43,11 @@ public class syslogUnityFrontend {
         System.out.println("Enter query: ");
 
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in, "UTF-8"));
-        String input = in.readLine();
+        //String input = in.readLine();
 
-        input = input.trim();
+        //input = input.trim();
+
+        String input = "spamhaus";
 
         Query query = parser.parse(input);
 
