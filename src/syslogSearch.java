@@ -22,6 +22,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.util.Version;
+import org.apache.lucene.index.Term;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -112,7 +113,7 @@ class syslogSearch implements Runnable {
             }
 
             if (hostnameField != null) {
-                bq.add(hostnameParser.parse(hostnameField), BooleanClause.Occur.MUST);
+                bq.add(new TermQuery(new Term("hostname", hostnameField)), BooleanClause.Occur.MUST);
             }
 
             if (priorityField != null) {
