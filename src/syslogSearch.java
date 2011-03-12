@@ -85,7 +85,6 @@ class syslogSearch implements Runnable {
 
                 else if (matchHostname.matcher(searchQuery[n]).find()) {
                     hostnameField = searchQuery[n].substring(9).trim();
-                    System.out.print(hostnameField + "\n");
                 }
 
                 else if (matchPriority.matcher(searchQuery[n]).find()) {
@@ -113,7 +112,7 @@ class syslogSearch implements Runnable {
             }
 
             if (hostnameField != null) {
-                bq.add(new TermQuery(new Term("hostname", hostnameField)), BooleanClause.Occur.MUST);
+                bq.add(new TermQuery(new Term("host", hostnameField)), BooleanClause.Occur.MUST);
             }
 
             if (priorityField != null) {
