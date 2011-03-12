@@ -110,18 +110,20 @@ class syslogSearch implements Runnable {
 
 
             if (!dateStartField.isEmpty()) {
+                System.out.print("Adding Date BQ\n");
+
                 dateStart = Long.getLong(dateStartField);
                 if (dateEndField.isEmpty())
                     dateEnd = new Date().getTime();
                 else
                     dateEnd = Long.getLong(dateEndField);
                 bq.add(NumericRangeQuery.newLongRange("date", dateStart, dateEnd, true, true), BooleanClause.Occur.MUST);
-                System.out.print("Adding Date BQ\n");
             }
 
             if (!hostnameField.isEmpty()) {
-                bq.add(hostnameParser.parse(hostnameField), BooleanClause.Occur.MUST);
                 System.out.print("Adding Host BQ\n");
+
+                bq.add(hostnameParser.parse(hostnameField), BooleanClause.Occur.MUST);
             }
 
             if (!priorityField.isEmpty()) {
