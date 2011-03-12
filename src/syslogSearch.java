@@ -122,7 +122,10 @@ class syslogSearch implements Runnable {
             for (int j = 0; j < hits.length; ++j) {
                 int docId = hits[j].doc;
                 Document d = searcher.doc(docId);
-                searchReply.print((j + 1) + ". " + d.get("data"));
+                searchReply.print("Date: " + d.get("date") + "\n" +
+                                  "Host: " + d.get("host") + "\n" +
+                                  "Pri: " + d.get("priority") + "\n" +
+                                  "Data: " + d.get("data") + "\n\n");
             }
 
             searchReply.close();
