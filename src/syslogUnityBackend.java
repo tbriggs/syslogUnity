@@ -1,3 +1,20 @@
+/*
+ * This file is part of syslogUnity.
+ *
+ *     syslogUnity is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, either version 3 of the License, or
+ *     (at your option) any later version.
+ *
+ *     syslogUnity is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with syslogUnity.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
@@ -8,7 +25,6 @@ import org.apache.lucene.analysis.miscellaneous.PatternAnalyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.util.Version;
 import org.apache.lucene.store.FSDirectory;
-
 
 class syslogUnityBackend {
 
@@ -34,7 +50,7 @@ class syslogUnityBackend {
         syslogProcess logStore3 = new syslogProcess(q, writer);
         syslogProcess logStore4 = new syslogProcess(q, writer);
         syslogProcess logStore5 = new syslogProcess(q, writer);
-        searchServer  logSearch = new searchServer(writer, analyzer);
+        searchServer logSearch = new searchServer(writer, analyzer);
 
         new Thread(logServer).start();
         new Thread(logStore1).start();

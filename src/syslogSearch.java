@@ -119,14 +119,13 @@ class syslogSearch implements Runnable {
             searcher.search(query, collector);
             ScoreDoc[] hits = collector.topDocs().scoreDocs;
 
-            System.out.println("Found " + hits.length + " hits.");
             for (int j = 0; j < hits.length; ++j) {
                 int docId = hits[j].doc;
                 Document d = searcher.doc(docId);
                 searchReply.print((j + 1) + ". " + d.get("data"));
             }
 
-                        searchReply.close();
+            searchReply.close();
             searchSocket.close();
         } catch (Exception ex) {
             System.out.print("Exception: " + ex + "\n");

@@ -38,15 +38,12 @@ class searchServer implements Runnable {
             Socket searchSocket;
             int i = 0;
 
-            while((i++ < 32)){
+            while ((i++ < 32)) {
                 searchSocket = searchListener.accept();
                 syslogSearch searchInstance = new syslogSearch(searchSocket, writer, analyzer);
                 Thread searchThread = new Thread(searchInstance);
                 searchThread.start();
             }
-
-
-
 
             searchListener.close();
         } catch (Exception e) {
