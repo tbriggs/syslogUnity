@@ -20,16 +20,14 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopScoreDocCollector;
+import org.apache.lucene.search.*;
 import org.apache.lucene.util.Version;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Date;
 import java.util.regex.Pattern;
 
 class syslogSearch implements Runnable {
@@ -39,10 +37,10 @@ class syslogSearch implements Runnable {
     private Socket searchSocket;
 
     final Pattern matchData = Pattern.compile("^data:", Pattern.CASE_INSENSITIVE);
-    //final Pattern matchHostname = Pattern.compile("^hostname:", Pattern.CASE_INSENSITIVE);
-    //final Pattern matchPriority = Pattern.compile("^priority:", Pattern.CASE_INSENSITIVE);
-    //final Pattern matchDateStart = Pattern.compile("^datestart:", Pattern.CASE_INSENSITIVE);
-    //final Pattern matchDateEnd = Pattern.compile("^dateend:", Pattern.CASE_INSENSITIVE);
+    final Pattern matchHostname = Pattern.compile("^hostname:", Pattern.CASE_INSENSITIVE);
+    final Pattern matchPriority = Pattern.compile("^priority:", Pattern.CASE_INSENSITIVE);
+    final Pattern matchDateStart = Pattern.compile("^datestart:", Pattern.CASE_INSENSITIVE);
+    final Pattern matchDateEnd = Pattern.compile("^dateend:", Pattern.CASE_INSENSITIVE);
 
     syslogSearch(Socket s, IndexWriter w, PatternAnalyzer a) {
         writer = w;
@@ -68,15 +66,16 @@ class syslogSearch implements Runnable {
                 i++;
             }
 
-            //String hostnameField = null;
-            //String priorityField = null;
-            //String dateStartField = null;
-            //String dateEndField = null;
+            String hostnameField = null;
+            String priorityField = null;
+            String dateStartField = null;
+            String dateEndField = null;
             String dataField = null;
+            long dateStart, dateEnd;
 
-            //QueryParser hostnameParser = new QueryParser(Version.LUCENE_30, "hostname", analyzer);
-            //QueryParser priorityParser = new QueryParser(Version.LUCENE_30, "priority", analyzer);
-            //QueryParser dateParser = new QueryParser(Version.LUCENE_30, "date", analyzer);
+            QueryParser hostnameParser = new QueryParser(Version.LUCENE_30, "hostname", analyzer);
+            QueryParser priorityParser = new QueryParser(Version.LUCENE_30, "priority", analyzer);
+            QueryParser dateParser = new QueryParser(Version.LUCENE_30, "date", analyzer);
             QueryParser dataParser = new QueryParser(Version.LUCENE_30, "data", analyzer);
 
 
@@ -85,38 +84,56 @@ class syslogSearch implements Runnable {
                     dataField = searchQuery[n].substring(5).trim();
                 }
 
-                //else if (matchHostname.matcher(searchQuery[n]).find()) {
-                //    hostnameField = searchQuery[n].substring(9).trim();
-                //}
+                else if (matchHostname.matcher(searchQuery[n]).find()) {
+                    hostnameField = searchQuery[n].substring(9).trim();
+                }
 
-                //else if (matchPriority.matcher(searchQuery[n]).find()) {
-                //    priorityField = searchQuery[n].substring(9).trim();
-                //}
+                else if (matchPriority.matcher(searchQuery[n]).find()) {
+                    priorityField = searchQuery[n].substring(9).trim();
+                }
 
-                //else if (matchDateStart.matcher(searchQuery[n]).find()) {
-                //    dateStartField = searchQuery[n].substring(10).trim();
-                //}
+                else if (matchDateStart.matcher(searchQuery[n]).find()) {
+                    dateStartField = searchQuery[n].substring(10).trim();
+                }
 
-                //else if (matchDateEnd.matcher(searchQuery[n]).find()) {
-                //    dateEndField = searchQuery[n].substring(8).trim();
-                //}
+                else if (matchDateEnd.matcher(searchQuery[n]).find()) {
+                    dateEndField = searchQuery[n].substring(8).trim();
+                }
             }
+
+            BooleanQuery bq = new  BooleanQuery();
+
+            if (!dateStartField.isEmpty()) {
+                dateStart = Long.getLong(dateStartField);
+                if (dateEndField.isEmpty())
+                    dateEnd = new Date().getTime();
+                else
+                    dateEnd = Long.getLong(dateEndField);
+                bq.add(NumericRangeQuery.newLongRange("date", dateStart, dateEnd, true, true), BooleanClause.Occur.MUST);
+
+            }
+
+            if (!hostnameField.isEmpty()) {
+                bq.add(hostnameParser.parse(hostnameField), BooleanClause.Occur.MUST);
+            }
+
+            if (!priorityField.isEmpty()) {
+                bq.add(priorityParser.parse(priorityField), BooleanClause.Occur.MUST);
+            }
+
+            if (!dataField.isEmpty()) {
+                bq.add(dataParser.parse(dataField), BooleanClause.Occur.MUST);
+            }
+
+
 
             PrintWriter searchReply = new PrintWriter(searchSocket.getOutputStream(), true);
 
             IndexReader reader = writer.getReader();
-            IndexSearcher searcher = new IndexSearcher(reader);
-
-            //Query[] queries = new Query[4];
-            //queries[0] = hostnameParser.parse(hostnameField);
-            //queries[1] = priorityParser.parse(priorityField);
-            //queries[2] = dateParser.parse(dateStartField);
-            //queries[3] = dataParser.parse(dataField);
-
-            Query query = dataParser.parse(dataField);
+            Searcher searcher = new IndexSearcher(reader);
 
             TopScoreDocCollector collector = TopScoreDocCollector.create(100, true);
-            searcher.search(query, collector);
+            searcher.search(bq, collector);
             ScoreDoc[] hits = collector.topDocs().scoreDocs;
 
             for (int j = 0; j < hits.length; ++j) {

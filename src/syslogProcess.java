@@ -17,6 +17,7 @@
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.NumericField;
 import org.apache.lucene.index.IndexWriter;
 
 import java.io.IOException;
@@ -52,8 +53,8 @@ class syslogProcess implements Runnable {
 
         Document doc = new Document();
         doc.add(new Field("host", logRecord.host.getHostName(), Field.Store.YES, Field.Index.ANALYZED));
-        doc.add(new Field("date", logRecord.date.toString(), Field.Store.YES, Field.Index.ANALYZED));
-        doc.add(new Field("priority", Integer.toString(logRecord.priority), Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new NumericField("date", Field.Store.YES, true).setLongValue(logRecord.date.getTime()));
+        doc.add(new NumericField("priority", Field.Store.YES, true).setIntValue(logRecord.priority));
         doc.add(new Field("data", logRecord.data, Field.Store.YES, Field.Index.ANALYZED));
 
         try {
