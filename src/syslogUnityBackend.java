@@ -67,7 +67,7 @@ class syslogUnityBackend {
         syslogProcess logStore3 = new syslogProcess(q, /*store, seq,*/ writer);
         syslogProcess logStore4 = new syslogProcess(q, /*store, seq,*/ writer);
         syslogProcess logStore5 = new syslogProcess(q, /*store, seq,*/ writer);
-        syslogSearch  logSearch = new syslogSearch(writer, parser);
+        syslogSearch logSearch = new syslogSearch(writer, parser);
 
         new Thread(logServer).start();
         new Thread(logStore1).start();
@@ -75,13 +75,6 @@ class syslogUnityBackend {
         new Thread(logStore3).start();
         new Thread(logStore4).start();
         new Thread(logStore5).start();
-
-        try {
-        Thread.sleep(5000);
-        new Thread(logSearch).start();
-        } catch (InterruptedException ex) {
-          System.out.print("InterruptedException: " + ex + "\n");
-        }
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
@@ -93,6 +86,16 @@ class syslogUnityBackend {
                 }
             }
         });
+
+
+        while (loopControl.test) {
+            try {
+                Thread.sleep(5000);
+                new Thread(logSearch).start();
+            } catch (InterruptedException ex) {
+                System.out.print("InterruptedException: " + ex + "\n");
+            }
+        }
     }
 }
 
@@ -211,8 +214,6 @@ class syslogProcess implements Runnable {
         } catch (IOException ex) {
             System.out.print("IOException: " + ex + "\n");
         }
-
-        System.out.print("Left in Queue: " + queue.size() + "\r");
     }
 }
 
@@ -248,7 +249,7 @@ class syslogSearch implements Runnable {
             for (int i = 0; i < hits.length; ++i) {
                 int docId = hits[i].doc;
                 Document d = searcher.doc(docId);
-                System.out.println((i + 1) + ". " + d.get("title"));
+                System.out.println((i + 1) + ". " + d.get("data"));
             }
         } catch (Exception ex) {
             System.out.print("Exception: " + ex + "\n");
