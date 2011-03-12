@@ -104,11 +104,11 @@ class syslogSearch implements Runnable {
 
             if (dateStartField != null) {
                 dateStart = Long.getLong(dateStartField);
+                System.out.print(dateStart + "\n");
                 if (dateEndField == null)
                     dateEnd = new Date().getTime();
                 else
                     dateEnd = Long.getLong(dateEndField);
-                System.out.print("s:" + dateStart + " e:" + dateEnd + "\n");
                 bq.add(NumericRangeQuery.newLongRange("date", dateStart, dateEnd, true, true), BooleanClause.Occur.MUST);
             }
 
