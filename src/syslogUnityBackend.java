@@ -31,7 +31,7 @@ class syslogUnityBackend {
     public static void main(String[] args) {
 
         final File INDEX_DIR = new File("/var/lib/syslogUnity/index");
-        final PatternAnalyzer analyzer = new PatternAnalyzer(Version.LUCENE_30, Pattern.compile("\\W+"), true, null);
+        final PatternAnalyzer analyzer = new PatternAnalyzer(Version.LUCENE_30, Pattern.compile("[^-0-9a-zA-Z_.]+"), true, null);
         final IndexWriter writer;
 
         try {
