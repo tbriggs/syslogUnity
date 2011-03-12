@@ -4,7 +4,7 @@ import java.io.*;
 import org.apache.lucene.analysis.Analyzer;
 //import org.apache.lucene.analysis.miscellaneous.PatternAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-//import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.*;
@@ -42,9 +42,9 @@ public class syslogUnityFrontend {
 
         Query query = parser.parse(input);
 
-        doSearch(searcher, query);
+        TopDocs hits = searcher.search(query, 1000);
 
-        /*System.out.print(hits.totalHits + " Hits for '" + query.toString() + "'\n");
+        System.out.print(hits.totalHits + " Hits for '" + query.toString() + "'\n");
 
         // Iterate through the results:
         for (int i = 0; i < hits.totalHits; i++) {
@@ -52,44 +52,9 @@ public class syslogUnityFrontend {
             String data = hitDoc.get("data");
             System.out.print("Matched in: " + data + "\n");
         }
-        */
+
 
         reader.close();
     }
 
-    public static void doSearch(final Searcher searcher, Query query) {
-                Collector streamingHitCollector = new Collector() {
-            private Scorer scorer;
-            private int docBase;
-
-            // simply print docId and score of every matching document
-            @Override
-            public void collect(int doc) throws IOException {
-                System.out.println("doc=" + doc + docBase + " score=" + scorer.score());
-            }
-
-            @Override
-            public boolean acceptsDocsOutOfOrder() {
-                return true;
-            }
-
-            @Override
-            public void setNextReader(IndexReader reader, int docBase)
-                    throws IOException {
-                this.docBase = docBase;
-            }
-
-            @Override
-            public void setScorer(Scorer scorer) throws IOException {
-                this.scorer = scorer;
-            }
-
-        };
-
-        try {
-            searcher.search(query, streamingHitCollector);
-        } catch (IOException ex) {
-            System.out.print("IOException: " + ex);
-        }
-    }
 }
