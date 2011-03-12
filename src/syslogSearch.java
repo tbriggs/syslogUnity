@@ -74,7 +74,6 @@ class syslogSearch implements Runnable {
             String dataField = null;
             long dateStart, dateEnd;
 
-            QueryParser hostnameParser = new QueryParser(Version.LUCENE_30, "hostname", analyzer);
             QueryParser priorityParser = new QueryParser(Version.LUCENE_30, "priority", analyzer);
             QueryParser dataParser = new QueryParser(Version.LUCENE_30, "data", analyzer);
 
@@ -86,6 +85,7 @@ class syslogSearch implements Runnable {
 
                 else if (matchHostname.matcher(searchQuery[n]).find()) {
                     hostnameField = searchQuery[n].substring(9).trim();
+                    System.out.print(hostnameField + "\n");
                 }
 
                 else if (matchPriority.matcher(searchQuery[n]).find()) {
