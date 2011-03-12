@@ -50,7 +50,7 @@ class syslogSearch implements Runnable {
 
     public void run() {
 
-        try {
+ //       try {
 
             BufferedReader searchInput = new BufferedReader(new InputStreamReader(searchSocket.getInputStream()));
 
@@ -75,7 +75,6 @@ class syslogSearch implements Runnable {
 
             QueryParser hostnameParser = new QueryParser(Version.LUCENE_30, "hostname", analyzer);
             QueryParser priorityParser = new QueryParser(Version.LUCENE_30, "priority", analyzer);
-            QueryParser dateParser = new QueryParser(Version.LUCENE_30, "date", analyzer);
             QueryParser dataParser = new QueryParser(Version.LUCENE_30, "data", analyzer);
 
 
@@ -125,8 +124,6 @@ class syslogSearch implements Runnable {
                 bq.add(dataParser.parse(dataField), BooleanClause.Occur.MUST);
             }
 
-
-
             PrintWriter searchReply = new PrintWriter(searchSocket.getOutputStream(), true);
 
             IndexReader reader = writer.getReader();
@@ -136,6 +133,7 @@ class syslogSearch implements Runnable {
             searcher.search(bq, collector);
             ScoreDoc[] hits = collector.topDocs().scoreDocs;
 
+            System.out.print("Found " + hits.length + " hits\n");
             for (int j = 0; j < hits.length; ++j) {
                 int docId = hits[j].doc;
                 Document d = searcher.doc(docId);
@@ -147,9 +145,9 @@ class syslogSearch implements Runnable {
 
             searchReply.close();
             searchSocket.close();
-        } catch (Exception ex) {
-            System.out.print("Exception: " + ex + "\n");
-        }
+ //       } catch (Exception ex) {
+ //           System.out.print("Exception: " + ex + "\n");
+ //       }
 
     }
 
