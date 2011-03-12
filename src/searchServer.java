@@ -58,7 +58,7 @@ class searchServer implements Runnable {
 
             for (int n = 0; n < i; n++) {
                 if (searchQuery[n].equals("\n")) break;
-                else if (searchQuery[n].contains("^data:")) {
+                else if (searchQuery[n].contains("data:")) {
                     dataField = searchQuery[n].substring(5).trim();
                 } else if (matchHostname.matcher(searchQuery[n]).matches()) {
                     hostnameField = searchQuery[n].substring(9).trim();
