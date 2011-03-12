@@ -1,5 +1,5 @@
 import java.io.*;
-import java.util.regex.Pattern;
+//import java.util.regex.Pattern;
 
 import org.apache.lucene.analysis.Analyzer;
 //import org.apache.lucene.analysis.miscellaneous.PatternAnalyzer;
@@ -42,7 +42,23 @@ public class syslogUnityFrontend {
 
         Query query = parser.parse(input);
 
-        Collector streamingHitCollector = new Collector() {
+        doSearch(searcher, query);
+
+        /*System.out.print(hits.totalHits + " Hits for '" + query.toString() + "'\n");
+
+        // Iterate through the results:
+        for (int i = 0; i < hits.totalHits; i++) {
+            Document hitDoc = searcher.doc(hits.scoreDocs[i].doc);
+            String data = hitDoc.get("data");
+            System.out.print("Matched in: " + data + "\n");
+        }
+        */
+
+        reader.close();
+    }
+
+    public static void doSearch(final Searcher searcher, Query query) {
+                Collector streamingHitCollector = new Collector() {
             private Scorer scorer;
             private int docBase;
 
@@ -70,19 +86,10 @@ public class syslogUnityFrontend {
 
         };
 
-
-        searcher.search(query, streamingHitCollector);
-
-        /*System.out.print(hits.totalHits + " Hits for '" + query.toString() + "'\n");
-
-        // Iterate through the results:
-        for (int i = 0; i < hits.totalHits; i++) {
-            Document hitDoc = searcher.doc(hits.scoreDocs[i].doc);
-            String data = hitDoc.get("data");
-            System.out.print("Matched in: " + data + "\n");
+        try {
+            searcher.search(query, streamingHitCollector);
+        } catch (IOException ex) {
+            System.out.print("IOException: " + ex);
         }
-        */
-
-        reader.close();
     }
 }
