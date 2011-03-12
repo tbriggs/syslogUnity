@@ -66,8 +66,6 @@ class syslogSearch implements Runnable {
                 i++;
             }
 
-            System.out.print(i + " Objects in array\n");
-
             String hostnameField = null;
             String priorityField = null;
             String dateStartField = null;
@@ -102,16 +100,9 @@ class syslogSearch implements Runnable {
                 }
             }
 
-            System.out.print("Split Objects\n");
-
             BooleanQuery bq = new BooleanQuery();
 
-            System.out.print("Created BQ\n");
-
-
-            if (!dateStartField.isEmpty()) {
-                System.out.print("Adding Date BQ\n");
-
+            if (dateStartField != null) {
                 dateStart = Long.getLong(dateStartField);
                 if (dateEndField.isEmpty())
                     dateEnd = new Date().getTime();
@@ -120,20 +111,16 @@ class syslogSearch implements Runnable {
                 bq.add(NumericRangeQuery.newLongRange("date", dateStart, dateEnd, true, true), BooleanClause.Occur.MUST);
             }
 
-            if (!hostnameField.isEmpty()) {
-                System.out.print("Adding Host BQ\n");
-
+            if (hostnameField != null) {
                 bq.add(hostnameParser.parse(hostnameField), BooleanClause.Occur.MUST);
             }
 
-            if (!priorityField.isEmpty()) {
+            if (priorityField != null) {
                 bq.add(priorityParser.parse(priorityField), BooleanClause.Occur.MUST);
-                System.out.print("Adding Pri BQ\n");
             }
 
-            if (!dataField.isEmpty()) {
+            if (dataField != null) {
                 bq.add(dataParser.parse(dataField), BooleanClause.Occur.MUST);
-                System.out.print("Adding Data BQ\n");
             }
 
             PrintWriter searchReply = new PrintWriter(searchSocket.getOutputStream(), true);
@@ -145,7 +132,6 @@ class syslogSearch implements Runnable {
             searcher.search(bq, collector);
             ScoreDoc[] hits = collector.topDocs().scoreDocs;
 
-            System.out.print("Found " + hits.length + " hits\n");
             for (int j = 0; j < hits.length; ++j) {
                 int docId = hits[j].doc;
                 Document d = searcher.doc(docId);
