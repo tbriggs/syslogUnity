@@ -71,12 +71,18 @@ class searchServer implements Runnable {
 
 
             PrintWriter searchReply = new PrintWriter(searchSocket.getOutputStream(), true);
-            searchReply.print("Your Search:\n");
-            if (hostnameField != null) searchReply.print("Hostname: '" + hostnameField + "'\n");
-            if (priorityField != null) searchReply.print("Priority: '" + priorityField + "'\n");
-            if (dateStartField != null) searchReply.print("Start Date: '" + dateStartField + "'\n");
-            if (dateEndField != null) searchReply.print("End Date: '" + dateEndField + "'\n");
-            if (dataField != null) searchReply.print("Data: '" + dataField + "'\n\n");
+
+            String reply = "SYSLOGUNITY\n";
+
+            reply = reply.concat("Your Search:\n");
+
+            if (hostnameField != null) reply = reply.concat("Hostname: '" + hostnameField + "'\n");
+            if (priorityField != null) reply = reply.concat("Priority: '" + priorityField + "'\n");
+            if (dateStartField != null) reply = reply.concat("Start Date: '" + dateStartField + "'\n");
+            if (dateEndField != null) reply = reply.concat("End Date: '" + dateEndField + "'\n");
+            if (dataField != null) reply = reply.concat("Data: '" + dataField + "'\n\n");
+
+            searchReply.print(reply);
 
             searchReply.close();
             searchSocket.close();
