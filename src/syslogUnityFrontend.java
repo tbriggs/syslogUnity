@@ -29,7 +29,7 @@ public class syslogUnityFrontend {
 
         IndexReader reader = IndexReader.open(FSDirectory.open(new File(index)), true);
         Searcher searcher = new IndexSearcher(reader);
-        Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_29);
+        Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
         CheckIndex check = new CheckIndex(FSDirectory.open(new File(index)));
 
         CheckIndex.Status res = check.checkIndex();
@@ -41,7 +41,7 @@ public class syslogUnityFrontend {
 
 
         // Parse a simple query that searches for "text":
-        QueryParser parser = new QueryParser(Version.LUCENE_29, "data", analyzer);
+        QueryParser parser = new QueryParser(Version.LUCENE_30, "data", analyzer);
 
         System.out.println("Enter query: ");
 
@@ -50,7 +50,7 @@ public class syslogUnityFrontend {
 
         //input = input.trim();
 
-        String input = "spamhaus";
+        String input = "postfix";
 
         Query query = parser.parse(input);
 

@@ -8,14 +8,16 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 //import com.sleepycat.je.*;
 
-import java.util.regex.Pattern;
+//import java.util.regex.Pattern;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.analysis.miscellaneous.PatternAnalyzer;
+//import org.apache.lucene.analysis.miscellaneous.PatternAnalyzer;
 import org.apache.lucene.util.Version;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 
 class syslogUnityBackend {
 
@@ -24,7 +26,7 @@ class syslogUnityBackend {
  //       final File DB_DIR = new File("/var/lib/syslogUnity/store/");
         final File INDEX_DIR = new File("/var/lib/syslogUnity/index");
 
-        final PatternAnalyzer analyzer = new PatternAnalyzer(Version.LUCENE_30, Pattern.compile("\\W+"), true, null);
+        Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
         final IndexWriter writer;
         try {
             writer = new IndexWriter(FSDirectory.open(INDEX_DIR), analyzer, IndexWriter.MaxFieldLength.LIMITED);
@@ -161,6 +163,8 @@ class syslogProcess implements Runnable {
             while (loopControl.test) {
                 storeLine(queue.take()/*, store, seq*/);
             }
+            writer.commit();
+            writer.optimize();
             writer.close();
         } catch (Exception ex) {
             System.out.print("Exception: " + ex.toString() + "\n");
