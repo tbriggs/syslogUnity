@@ -103,11 +103,11 @@ class syslogSearch implements Runnable {
             BooleanQuery bq = new BooleanQuery();
 
             if (dateStartField != null) {
-                dateStart = new Long(dateStartField).longValue();
+                dateStart = Long.parseLong(dateStartField);
                 if (dateEndField == null)
                     dateEnd = new Date().getTime();
                 else
-                    dateEnd = new Long(dateEndField).longValue();
+                    dateEnd = Long.parseLong(dateEndField);
                 bq.add(NumericRangeQuery.newLongRange("date", dateStart, dateEnd, true, true), BooleanClause.Occur.MUST);
             }
 
