@@ -1,8 +1,11 @@
 import java.io.*;
 import java.util.regex.Pattern;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.miscellaneous.PatternAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.FSDirectory;
@@ -20,9 +23,12 @@ public class syslogUnityFrontend {
 
         String index = "/var/lib/syslogUnity/index";
 
-        final PatternAnalyzer analyzer = new PatternAnalyzer(Version.LUCENE_30, Pattern.compile("\\W+"), true, null);
+        //final PatternAnalyzer analyzer = new PatternAnalyzer(Version.LUCENE_30, Pattern.compile("\\W+"), true, null);
 
-        IndexSearcher searcher = new IndexSearcher(FSDirectory.open(new File(index)));
+        IndexReader reader = IndexReader.open(FSDirectory.open(new File(index)), true);
+        IndexSearcher searcher = new IndexSearcher(reader);
+        Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
+
 
         // Parse a simple query that searches for "text":
         QueryParser parser = new QueryParser(Version.LUCENE_30, "data", analyzer);
