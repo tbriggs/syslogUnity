@@ -1,33 +1,35 @@
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.*;
-//import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.regex.Pattern;
 
-//import com.sleepycat.je.*;
-
-//import java.util.regex.Pattern;
-
+import org.apache.lucene.analysis.miscellaneous.PatternAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-//import org.apache.lucene.analysis.miscellaneous.PatternAnalyzer;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.*;
 import org.apache.lucene.util.Version;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
+
 
 class syslogUnityBackend {
 
     public static void main(String[] args) {
 
- //       final File DB_DIR = new File("/var/lib/syslogUnity/store/");
+        //       final File DB_DIR = new File("/var/lib/syslogUnity/store/");
         final File INDEX_DIR = new File("/var/lib/syslogUnity/index");
-
-        Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
+        final PatternAnalyzer analyzer = new PatternAnalyzer(Version.LUCENE_30, Pattern.compile("\\W+"), true, null);
         final IndexWriter writer;
+
+        QueryParser parser = new QueryParser(Version.LUCENE_30, "data", analyzer);
+
         try {
             writer = new IndexWriter(FSDirectory.open(INDEX_DIR), analyzer, IndexWriter.MaxFieldLength.LIMITED);
         } catch (IOException ex) {
@@ -65,6 +67,7 @@ class syslogUnityBackend {
         syslogProcess logStore3 = new syslogProcess(q, /*store, seq,*/ writer);
         syslogProcess logStore4 = new syslogProcess(q, /*store, seq,*/ writer);
         syslogProcess logStore5 = new syslogProcess(q, /*store, seq,*/ writer);
+        syslogSearch  logSearch = new syslogSearch(writer, parser);
 
         new Thread(logServer).start();
         new Thread(logStore1).start();
@@ -72,6 +75,13 @@ class syslogUnityBackend {
         new Thread(logStore3).start();
         new Thread(logStore4).start();
         new Thread(logStore5).start();
+
+        try {
+        Thread.sleep(5000);
+        new Thread(logSearch).start();
+        } catch (InterruptedException ex) {
+          System.out.print("InterruptedException: " + ex + "\n");
+        }
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
@@ -205,6 +215,49 @@ class syslogProcess implements Runnable {
         System.out.print("Left in Queue: " + queue.size() + "\r");
     }
 }
+
+class syslogSearch implements Runnable {
+
+    private QueryParser parser;
+    private IndexWriter writer;
+
+    syslogSearch(IndexWriter w, QueryParser p) {
+        writer = w;
+        parser = p;
+    }
+
+    public void run() {
+
+        System.out.print("Enter query: ");
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+
+        try {
+            IndexReader reader = writer.getReader();
+            IndexSearcher searcher = new IndexSearcher(reader);
+            String input = in.readLine();
+
+            input = input.trim();
+
+            Query query = parser.parse(input);
+
+            TopScoreDocCollector collector = TopScoreDocCollector.create(25, true);
+            searcher.search(query, collector);
+            ScoreDoc[] hits = collector.topDocs().scoreDocs;
+
+            System.out.println("Found " + hits.length + " hits.");
+            for (int i = 0; i < hits.length; ++i) {
+                int docId = hits[i].doc;
+                Document d = searcher.doc(docId);
+                System.out.println((i + 1) + ". " + d.get("title"));
+            }
+        } catch (Exception ex) {
+            System.out.print("Exception: " + ex + "\n");
+        }
+
+    }
+
+}
+
 
 class recordStruct {
     public Date date;
