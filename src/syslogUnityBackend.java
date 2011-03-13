@@ -51,7 +51,7 @@ class syslogUnityBackend {
         syslogProcess logStore3 = new syslogProcess(q, writer);
         syslogProcess logStore4 = new syslogProcess(q, writer);
         syslogProcess logStore5 = new syslogProcess(q, writer);
-        //searchServer logSearch = new searchServer(writer, analyzer);
+        searchServer logSearch = new searchServer(writer, analyzer);
 
         new Thread(logServer).start();
         new Thread(logStore1).start();
@@ -59,7 +59,7 @@ class syslogUnityBackend {
         new Thread(logStore3).start();
         new Thread(logStore4).start();
         new Thread(logStore5).start();
-        //new Thread(logSearch).start();
+        new Thread(logSearch).start();
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {

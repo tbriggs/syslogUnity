@@ -60,8 +60,6 @@ class syslogProcess implements Runnable {
 
         try {
             writer.addDocument(doc);
-            writer.optimize(true);
-            writer.commit();
         } catch (IOException ex) {
             System.out.print("IOException: " + ex + "\n");
         }
