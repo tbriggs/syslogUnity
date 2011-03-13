@@ -39,6 +39,7 @@ class syslogProcess implements Runnable {
         try {
             while (loopControl.test) {
                 storeLine(queue.take());
+                System.out.print("Left in queue: " + queue.size() + "  \r");
             }
             writer.commit();
             writer.optimize();
@@ -64,5 +65,6 @@ class syslogProcess implements Runnable {
         } catch (IOException ex) {
             System.out.print("IOException: " + ex + "\n");
         }
+
     }
 }
