@@ -35,7 +35,6 @@ class syslogProcess implements Runnable {
 
     public void run() {
 
-
         try {
             while (loopControl.test) {
                 storeLine(queue.take(), writer);
