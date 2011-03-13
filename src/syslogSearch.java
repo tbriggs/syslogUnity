@@ -125,7 +125,6 @@ class syslogSearch implements Runnable {
 
             PrintWriter searchReply = new PrintWriter(searchSocket.getOutputStream(), true);
 
-            writer.optimize();
             IndexReader reader = writer.getReader();
             Searcher searcher = new IndexSearcher(reader);
 
