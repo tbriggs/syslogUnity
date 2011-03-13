@@ -25,8 +25,8 @@ import java.util.concurrent.BlockingQueue;
 
 class syslogProcess implements Runnable {
 
-    private final BlockingQueue<recordStruct> queue;
-    private final IndexWriter writer;
+    private static BlockingQueue<recordStruct> queue;
+    private static IndexWriter writer;
 
     syslogProcess(BlockingQueue<recordStruct> q, IndexWriter wr) {
         queue = q;
@@ -59,6 +59,8 @@ class syslogProcess implements Runnable {
 
         try {
             writer.addDocument(doc);
+            writer.optimize(true);
+            writer.commit();
         } catch (IOException ex) {
             System.out.print("IOException: " + ex + "\n");
         }
