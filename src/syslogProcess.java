@@ -25,8 +25,8 @@ import java.util.concurrent.BlockingQueue;
 
 class syslogProcess implements Runnable {
 
-    private final BlockingQueue<recordStruct> queue;
-    private final IndexWriter writer;
+    private BlockingQueue<recordStruct> queue;
+    private IndexWriter writer;
 
     syslogProcess(BlockingQueue<recordStruct> q, IndexWriter wr) {
         queue = q;

@@ -37,11 +37,11 @@ class syslogSearch implements Runnable {
     private IndexWriter writer;
     private Socket searchSocket;
 
-    final Pattern matchData = Pattern.compile("^data:", Pattern.CASE_INSENSITIVE);
-    final Pattern matchHostname = Pattern.compile("^hostname:", Pattern.CASE_INSENSITIVE);
-    final Pattern matchPriority = Pattern.compile("^priority:", Pattern.CASE_INSENSITIVE);
-    final Pattern matchDateStart = Pattern.compile("^datestart:", Pattern.CASE_INSENSITIVE);
-    final Pattern matchDateEnd = Pattern.compile("^dateend:", Pattern.CASE_INSENSITIVE);
+    private Pattern matchData = Pattern.compile("^data:", Pattern.CASE_INSENSITIVE);
+    private Pattern matchHostname = Pattern.compile("^hostname:", Pattern.CASE_INSENSITIVE);
+    private Pattern matchPriority = Pattern.compile("^priority:", Pattern.CASE_INSENSITIVE);
+    private Pattern matchDateStart = Pattern.compile("^datestart:", Pattern.CASE_INSENSITIVE);
+    private Pattern matchDateEnd = Pattern.compile("^dateend:", Pattern.CASE_INSENSITIVE);
 
     syslogSearch(Socket s, IndexWriter w, PatternAnalyzer a) {
         writer = w;
@@ -142,10 +142,13 @@ class syslogSearch implements Runnable {
             }
 
             searchReply.close();
+            searcher.close();
+            reader.close();
+            analyzer.close();
+            writer.close();
             searchSocket.close();
         } catch (Exception ex) {
             System.out.print("Exception: " + ex + "\n");
-            return;
         }
 
     }

@@ -25,7 +25,7 @@ import java.util.concurrent.BlockingQueue;
 
 class syslogReceive implements Runnable {
     int BUFFER_SIZE = 1000;
-    private final BlockingQueue<recordStruct> queue;
+    private BlockingQueue<recordStruct> queue;
     DatagramSocket syslog;
     DatagramPacket logEntry;
 
