@@ -25,8 +25,8 @@ import java.util.concurrent.BlockingQueue;
 
 class syslogProcess implements Runnable {
 
-    private BlockingQueue<recordStruct> queue;
-    private IndexWriter writer;
+    private final BlockingQueue<recordStruct> queue;
+    private final IndexWriter writer;
 
     syslogProcess(BlockingQueue<recordStruct> q, IndexWriter wr) {
         queue = q;
@@ -35,9 +35,10 @@ class syslogProcess implements Runnable {
 
     public void run() {
 
+
         try {
             while (loopControl.test) {
-                storeLine(queue.take(), writer);
+                storeLine(queue.take());
             }
             writer.commit();
             writer.optimize();
@@ -48,10 +49,10 @@ class syslogProcess implements Runnable {
 
     }
 
-    void storeLine(recordStruct logRecord, IndexWriter writer) {
+    void storeLine(recordStruct logRecord) {
 
         Document doc = new Document();
-        doc.add(new Field("host", logRecord.host.getHostName(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+        doc.add(new Field("host", logRecord.host.getHostName(), Field.Store.YES, Field.Index.ANALYZED));
         doc.add(new NumericField("date", Field.Store.YES, true).setLongValue(logRecord.date.getTime()));
         doc.add(new NumericField("priority", Field.Store.YES, true).setIntValue(logRecord.priority));
         doc.add(new Field("data", logRecord.data, Field.Store.YES, Field.Index.ANALYZED));

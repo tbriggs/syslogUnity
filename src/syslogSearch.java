@@ -132,8 +132,8 @@ class syslogSearch implements Runnable {
             searcher.search(bq, collector);
             ScoreDoc[] hits = collector.topDocs().scoreDocs;
 
-            for (int j = 0; j < hits.length; ++j) {
-                int docId = hits[j].doc;
+            for (ScoreDoc hit : hits) {
+                int docId = hit.doc;
                 Document d = searcher.doc(docId);
                 searchReply.print("Date: " + d.get("date") + "\n" +
                                   "Host: " + d.get("host") + "\n" +
@@ -144,8 +144,6 @@ class syslogSearch implements Runnable {
             searchReply.close();
             searcher.close();
             reader.close();
-            analyzer.close();
-            writer.close();
             searchSocket.close();
         } catch (Exception ex) {
             System.out.print("Exception: " + ex + "\n");
