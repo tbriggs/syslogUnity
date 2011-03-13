@@ -38,7 +38,7 @@ class syslogProcess implements Runnable {
 
         try {
             while (loopControl.test) {
-                storeLine(queue.take());
+                storeLine(queue.take(), writer);
             }
             writer.commit();
             writer.optimize();
@@ -49,7 +49,7 @@ class syslogProcess implements Runnable {
 
     }
 
-    void storeLine(recordStruct logRecord) {
+    void storeLine(recordStruct logRecord, IndexWriter writer) {
 
         Document doc = new Document();
         doc.add(new Field("host", logRecord.host.getHostName(), Field.Store.YES, Field.Index.NOT_ANALYZED));
@@ -59,6 +59,7 @@ class syslogProcess implements Runnable {
 
         try {
             writer.addDocument(doc);
+            writer.close();
         } catch (IOException ex) {
             System.out.print("IOException: " + ex + "\n");
         }
