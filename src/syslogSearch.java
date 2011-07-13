@@ -22,26 +22,17 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.util.Version;
-import org.apache.lucene.index.Term;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Date;
-import java.util.regex.Pattern;
 
 class syslogSearch implements Runnable {
 
     private PatternAnalyzer analyzer;
     private IndexWriter writer;
     private Socket searchSocket;
-
-    private Pattern matchData = Pattern.compile("^data:", Pattern.CASE_INSENSITIVE);
-    private Pattern matchHostname = Pattern.compile("^hostname:", Pattern.CASE_INSENSITIVE);
-    private Pattern matchPriority = Pattern.compile("^priority:", Pattern.CASE_INSENSITIVE);
-    private Pattern matchDateStart = Pattern.compile("^datestart:", Pattern.CASE_INSENSITIVE);
-    private Pattern matchDateEnd = Pattern.compile("^dateend:", Pattern.CASE_INSENSITIVE);
 
     syslogSearch(Socket s, IndexWriter w, PatternAnalyzer a) {
         writer = w;
@@ -53,85 +44,29 @@ class syslogSearch implements Runnable {
 
         try {
 
-            BufferedReader searchInput = new BufferedReader(new InputStreamReader(searchSocket.getInputStream()));
-
-            String[] searchQuery = new String[5];
-            int i = 0;
-
-            while (i < 5) {
-                searchQuery[i] = searchInput.readLine().trim();
-                if (searchQuery[i].equals("\n") ||
-                        searchQuery[i].equals("\r\n") ||
-                        searchQuery[i].isEmpty())
-                    break;
-                i++;
-            }
-
-            String hostnameField = null;
-            String priorityField = null;
-            String dateStartField = null;
-            String dateEndField = null;
-            String dataField = null;
-            long dateStart, dateEnd;
-
-            QueryParser priorityParser = new QueryParser(Version.LUCENE_30, "priority", analyzer);
-            QueryParser dataParser = new QueryParser(Version.LUCENE_30, "data", analyzer);
-
-
-            for (int n = 0; n < i; n++) {
-                if (matchData.matcher(searchQuery[n]).find()) {
-                    dataField = searchQuery[n].substring(5).trim();
-                } else if (matchHostname.matcher(searchQuery[n]).find()) {
-                    hostnameField = searchQuery[n].substring(9).trim();
-                } else if (matchPriority.matcher(searchQuery[n]).find()) {
-                    priorityField = searchQuery[n].substring(9).trim();
-                } else if (matchDateStart.matcher(searchQuery[n]).find()) {
-                    dateStartField = searchQuery[n].substring(10).trim();
-                } else if (matchDateEnd.matcher(searchQuery[n]).find()) {
-                    dateEndField = searchQuery[n].substring(8).trim();
-                }
-            }
-
-            BooleanQuery bq = new BooleanQuery();
-
-            if (dateStartField != null) {
-                dateStart = Long.parseLong(dateStartField);
-                if (dateEndField == null)
-                    dateEnd = new Date().getTime();
-                else
-                    dateEnd = Long.parseLong(dateEndField);
-                bq.add(NumericRangeQuery.newLongRange("date", dateStart, dateEnd, true, true),
-                        BooleanClause.Occur.MUST);
-            }
-
-            if (hostnameField != null) {
-                bq.add(new TermQuery(new Term("host", hostnameField)), BooleanClause.Occur.MUST);
-            }
-
-            if (priorityField != null) {
-                bq.add(priorityParser.parse(priorityField), BooleanClause.Occur.MUST);
-            }
-
-            if (dataField != null) {
-                bq.add(dataParser.parse(dataField), BooleanClause.Occur.MUST);
-            }
-
-            PrintWriter searchReply = new PrintWriter(searchSocket.getOutputStream(), true);
+            String searchQuery =
+                    (new BufferedReader(new InputStreamReader(searchSocket.getInputStream()))).readLine().trim();
 
             IndexReader reader = writer.getReader();
             Searcher searcher = new IndexSearcher(reader);
 
-            TopScoreDocCollector collector = TopScoreDocCollector.create(100, true);
-            searcher.search(bq, collector);
-            ScoreDoc[] hits = collector.topDocs().scoreDocs;
+            QueryParser indexParser = new QueryParser(Version.LUCENE_30, "data", analyzer);
 
-            for (ScoreDoc hit : hits) {
-                int docId = hit.doc;
-                Document d = searcher.doc(docId);
-                searchReply.print("Date: " + d.get("date") + "\n" +
-                        "Host: " + d.get("host") + "\n" +
-                        "Pri: " + d.get("priority") + "\n" +
-                        "Data: " + d.get("data") + "\n\n");
+            SortField hitSortField = new SortField("date", SortField.LONG);
+            Sort hitSort = new Sort(hitSortField);
+
+            TopFieldDocs hits = searcher.search(indexParser.parse(searchQuery), null, 1000, hitSort);
+
+            PrintWriter searchReply = new PrintWriter(searchSocket.getOutputStream(), true);
+
+            for (int i = 0; i < hits.totalHits; i++) {
+                Document document = searcher.doc(hits.scoreDocs[i].doc);
+
+                String host = document.get("hostname");
+                String date = document.get("date");
+                String data = document.get("data");
+
+                searchReply.print("host: " + host + ", date: " + date + ", data: " + data + "\n\n");
             }
 
             searchReply.close();
