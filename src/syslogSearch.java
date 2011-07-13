@@ -59,6 +59,8 @@ class syslogSearch implements Runnable {
 
             PrintWriter searchReply = new PrintWriter(searchSocket.getOutputStream(), true);
 
+            searchReply.println(hits.totalHits + " Hits for " + searchQuery);
+
             for (int i = 0; i < hits.totalHits; i++) {
                 Document document = searcher.doc(hits.scoreDocs[i].doc);
 
