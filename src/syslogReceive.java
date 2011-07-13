@@ -8,6 +8,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
 
 
 class syslogReceive implements Runnable {
@@ -44,8 +45,11 @@ class syslogReceive implements Runnable {
         try {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(syslogXML);
-            doc.getDocumentElement().normalize();
+
+            InputSource is = new InputSource();
+            is.setCharacterStream(new StringReader(syslogXML));
+
+            Document doc = dBuilder.parse(is);
 
             System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
             NodeList nList = doc.getElementsByTagName("doc");
