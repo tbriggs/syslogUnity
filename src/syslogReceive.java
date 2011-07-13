@@ -1,4 +1,7 @@
+import sun.font.FileFont;
+
 import java.io.*;
+import java.security.DigestException;
 import java.util.Date;
 import java.util.concurrent.BlockingQueue;
 
@@ -11,21 +14,31 @@ class syslogReceive implements Runnable {
 
     public void run() {
 
-        while (loopControl.test) {
-            try {
-                File pipe = new File("/var/run/syslogUnity/syslogUnity.fifo");
-                System.out.println(pipe.canRead());
-                FileInputStream fis = new FileInputStream(pipe);
-                System.out.println("exiting.");
-            } catch (Exception e) {
-                e.printStackTrace();
+        File pipe = new File("/var/run/syslogUnity/syslogUnity.fifo");
+
+        try {
+            FileInputStream syslogPipe = new FileInputStream(pipe);
+            DataInputStream in = new DataInputStream(syslogPipe);
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            String syslogLine;
+            while ((syslogLine = br.readLine()) != null) {
+                System.out.println(syslogLine);
             }
-            //try {
-            //    queue.put(addToQueue(logLine, logHost));
-            //} catch (InterruptedException ex) {
-            //    System.out.print("InterruptedException: " + ex.toString() + "\n");
-            //}
+            in.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+
+        //while (loopControl.test) {
+
+
+        //try {
+        //    queue.put(addToQueue(logLine, logHost));
+        //} catch (InterruptedException ex) {
+        //    System.out.print("InterruptedException: " + ex.toString() + "\n");
+        //}
+        //}
     }
 
     recordStruct addToQueue(String logLine) {
