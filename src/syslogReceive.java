@@ -48,7 +48,7 @@ class syslogReceive implements Runnable {
             doc.getDocumentElement().normalize();
 
             System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-            NodeList nList = doc.getElementsByTagName("staff");
+            NodeList nList = doc.getElementsByTagName("doc");
             System.out.println("-----------------------");
 
             for (int temp = 0; temp < nList.getLength(); temp++) {
