@@ -46,12 +46,12 @@ class syslogUnityBackend {
         BlockingQueue<recordStruct> q = new LinkedBlockingQueue<recordStruct>();
 
         syslogReceive logServer = new syslogReceive(q);
-        syslogProcess logStore1 = new syslogProcess(q, writer);
-        syslogProcess logStore2 = new syslogProcess(q, writer);
-        syslogProcess logStore3 = new syslogProcess(q, writer);
-        syslogProcess logStore4 = new syslogProcess(q, writer);
-        syslogProcess logStore5 = new syslogProcess(q, writer);
-        searchServer logSearch = new searchServer(writer, analyzer);
+        //syslogProcess logStore1 = new syslogProcess(q, writer);
+        //syslogProcess logStore2 = new syslogProcess(q, writer);
+        //syslogProcess logStore3 = new syslogProcess(q, writer);
+        //syslogProcess logStore4 = new syslogProcess(q, writer);
+        //syslogProcess logStore5 = new syslogProcess(q, writer);
+        //searchServer logSearch = new searchServer(writer, analyzer);
 
         new Thread(logServer).start();
         new Thread(logStore1).start();

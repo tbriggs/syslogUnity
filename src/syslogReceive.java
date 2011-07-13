@@ -1,48 +1,34 @@
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
+import java.io.*;
 import java.util.Date;
 import java.util.concurrent.BlockingQueue;
 
 class syslogReceive implements Runnable {
-    int BUFFER_SIZE = 1000;
     private final BlockingQueue<recordStruct> queue;
-    DatagramSocket syslog;
-    DatagramPacket logEntry;
 
     syslogReceive(BlockingQueue<recordStruct> q) {
         queue = q;
     }
 
     public void run() {
-        try {
-            syslog = new DatagramSocket(514);
-            logEntry = new DatagramPacket(new byte[BUFFER_SIZE], BUFFER_SIZE);
-        } catch (SocketException ex) {
-            System.out.print("SocketException: " + ex.toString() + "\n");
-        }
 
         while (loopControl.test) {
             try {
-                syslog.receive(logEntry);
-            } catch (IOException ex) {
-                System.out.print("IOException: " + ex.toString() + "\n");
+                File pipe = new File("/var/run/syslogUnity/syslogUnity.fifo");
+                System.out.println(pipe.canRead());
+                FileInputStream fis = new FileInputStream(pipe);
+                System.out.println("exiting.");
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-            InetAddress logHost = logEntry.getAddress();
-            String logLine = new String(logEntry.getData(), 0, logEntry.getLength());
-            System.out.print(logLine + "\n\n");
-            try {
-                queue.put(addToQueue(logLine, logHost));
-            } catch (InterruptedException ex) {
-                System.out.print("InterruptedException: " + ex.toString() + "\n");
-            }
+            //try {
+            //    queue.put(addToQueue(logLine, logHost));
+            //} catch (InterruptedException ex) {
+            //    System.out.print("InterruptedException: " + ex.toString() + "\n");
+            //}
         }
     }
 
-    recordStruct addToQueue(String logLine, InetAddress logHost) {
+    recordStruct addToQueue(String logLine) {
         Date logDate = new Date();
         String logPriority = "";
         int i;
@@ -54,7 +40,7 @@ class syslogReceive implements Runnable {
         int logIntPriority = Integer.parseInt(logPriority.trim());
         String logData = logLine.substring(i + 1, logLine.length());
 
-        return new recordStruct(logDate, logIntPriority, logHost, logData);
+        return new recordStruct(logDate, logIntPriority, logData);
 
     }
 }

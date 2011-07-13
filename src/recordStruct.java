@@ -21,13 +21,11 @@ import java.util.Date;
 class recordStruct {
     public Date date;
     public int priority;
-    public InetAddress host;
     public String data;
 
-    recordStruct(Date d, int p, InetAddress i, String s) {
+    recordStruct(Date d, int p, String s) {
         date = d;
         priority = p;
-        host = i;
         data = s;
     }
 

@@ -81,21 +81,13 @@ class syslogSearch implements Runnable {
             for (int n = 0; n < i; n++) {
                 if (matchData.matcher(searchQuery[n]).find()) {
                     dataField = searchQuery[n].substring(5).trim();
-                }
-
-                else if (matchHostname.matcher(searchQuery[n]).find()) {
+                } else if (matchHostname.matcher(searchQuery[n]).find()) {
                     hostnameField = searchQuery[n].substring(9).trim();
-                }
-
-                else if (matchPriority.matcher(searchQuery[n]).find()) {
+                } else if (matchPriority.matcher(searchQuery[n]).find()) {
                     priorityField = searchQuery[n].substring(9).trim();
-                }
-
-                else if (matchDateStart.matcher(searchQuery[n]).find()) {
+                } else if (matchDateStart.matcher(searchQuery[n]).find()) {
                     dateStartField = searchQuery[n].substring(10).trim();
-                }
-
-                else if (matchDateEnd.matcher(searchQuery[n]).find()) {
+                } else if (matchDateEnd.matcher(searchQuery[n]).find()) {
                     dateEndField = searchQuery[n].substring(8).trim();
                 }
             }
@@ -109,7 +101,7 @@ class syslogSearch implements Runnable {
                 else
                     dateEnd = Long.parseLong(dateEndField);
                 bq.add(NumericRangeQuery.newLongRange("date", dateStart, dateEnd, true, true),
-                                                                    BooleanClause.Occur.MUST);
+                        BooleanClause.Occur.MUST);
             }
 
             if (hostnameField != null) {
@@ -137,9 +129,9 @@ class syslogSearch implements Runnable {
                 int docId = hit.doc;
                 Document d = searcher.doc(docId);
                 searchReply.print("Date: " + d.get("date") + "\n" +
-                                  "Host: " + d.get("host") + "\n" +
-                                  "Pri: " + d.get("priority") + "\n" +
-                                  "Data: " + d.get("data") + "\n\n");
+                        "Host: " + d.get("host") + "\n" +
+                        "Pri: " + d.get("priority") + "\n" +
+                        "Data: " + d.get("data") + "\n\n");
             }
 
             searchReply.close();
