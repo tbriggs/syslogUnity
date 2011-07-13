@@ -43,22 +43,22 @@ class syslogUnityBackend {
         }
         writer.setRAMBufferSizeMB(8);
 
-        BlockingQueue<recordStruct> q = new LinkedBlockingQueue<recordStruct>();
+        BlockingQueue<org.w3c.dom.Document> q = new LinkedBlockingQueue<org.w3c.dom.Document>();
 
         syslogReceive logServer = new syslogReceive(q);
-        //syslogProcess logStore1 = new syslogProcess(q, writer);
-        //syslogProcess logStore2 = new syslogProcess(q, writer);
-        //syslogProcess logStore3 = new syslogProcess(q, writer);
-        //syslogProcess logStore4 = new syslogProcess(q, writer);
-        //syslogProcess logStore5 = new syslogProcess(q, writer);
+        syslogProcess logStore1 = new syslogProcess(q, writer);
+        syslogProcess logStore2 = new syslogProcess(q, writer);
+        syslogProcess logStore3 = new syslogProcess(q, writer);
+        syslogProcess logStore4 = new syslogProcess(q, writer);
+        syslogProcess logStore5 = new syslogProcess(q, writer);
         //searchServer logSearch = new searchServer(writer, analyzer);
 
         new Thread(logServer).start();
-        //new Thread(logStore1).start();
-        //new Thread(logStore2).start();
-        //new Thread(logStore3).start();
-        //new Thread(logStore4).start();
-        //new Thread(logStore5).start();
+        new Thread(logStore1).start();
+        new Thread(logStore2).start();
+        new Thread(logStore3).start();
+        new Thread(logStore4).start();
+        new Thread(logStore5).start();
         //new Thread(logSearch).start();
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
