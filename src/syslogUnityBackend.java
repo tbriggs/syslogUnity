@@ -54,12 +54,12 @@ class syslogUnityBackend {
         //searchServer logSearch = new searchServer(writer, analyzer);
 
         new Thread(logServer).start();
-        new Thread(logStore1).start();
-        new Thread(logStore2).start();
-        new Thread(logStore3).start();
-        new Thread(logStore4).start();
-        new Thread(logStore5).start();
-        new Thread(logSearch).start();
+        //new Thread(logStore1).start();
+        //new Thread(logStore2).start();
+        //new Thread(logStore3).start();
+        //new Thread(logStore4).start();
+        //new Thread(logStore5).start();
+        //new Thread(logSearch).start();
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
