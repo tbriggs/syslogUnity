@@ -33,6 +33,7 @@ class syslogReceive implements Runnable {
 
             InetAddress logHost = logEntry.getAddress();
             String logLine = new String(logEntry.getData(), 0, logEntry.getLength());
+            System.out.print(logLine + "\n");
             try {
                 queue.put(addToQueue(logLine, logHost));
             } catch (InterruptedException ex) {

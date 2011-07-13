@@ -108,7 +108,8 @@ class syslogSearch implements Runnable {
                     dateEnd = new Date().getTime();
                 else
                     dateEnd = Long.parseLong(dateEndField);
-                bq.add(NumericRangeQuery.newLongRange("date", dateStart, dateEnd, true, true), BooleanClause.Occur.MUST);
+                bq.add(NumericRangeQuery.newLongRange("date", dateStart, dateEnd, true, true),
+                                                                    BooleanClause.Occur.MUST);
             }
 
             if (hostnameField != null) {

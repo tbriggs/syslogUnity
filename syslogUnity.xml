@@ -8,7 +8,7 @@
   <property name="skip.tests" value="true"/>
    -->
   
-  <!-- Compiler options -->
+  <!-- Compiler options AFB4BB3 -->
   
   <property name="compiler.debug" value="on"/>
   <property name="compiler.generate.no.warnings" value="off"/>
