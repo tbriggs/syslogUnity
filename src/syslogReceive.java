@@ -20,8 +20,9 @@ class syslogReceive implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             String syslogLine;
             while (loopControl.test) {
-                syslogLine = br.readLine();
+              while ((syslogLine = br.readLine()) != null ) {
                 System.out.println(syslogLine);
+              }
             }
             in.close();
         } catch (Exception e) {
