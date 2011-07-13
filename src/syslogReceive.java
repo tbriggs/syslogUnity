@@ -1,7 +1,5 @@
-import sun.font.FileFont;
 
 import java.io.*;
-import java.security.DigestException;
 import java.util.Date;
 import java.util.concurrent.BlockingQueue;
 
@@ -21,7 +19,8 @@ class syslogReceive implements Runnable {
             DataInputStream in = new DataInputStream(syslogPipe);
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             String syslogLine;
-            while ((syslogLine = br.readLine()) != null) {
+            while (loopControl.test) {
+                syslogLine = br.readLine();
                 System.out.println(syslogLine);
             }
             in.close();
