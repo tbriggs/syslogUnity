@@ -16,6 +16,8 @@
  */
 
 import org.apache.lucene.analysis.miscellaneous.PatternAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -50,7 +52,7 @@ class syslogSearch implements Runnable {
             IndexReader reader = writer.getReader();
             Searcher searcher = new IndexSearcher(reader);
 
-            QueryParser indexParser = new QueryParser(Version.LUCENE_30, "data", analyzer);
+            QueryParser indexParser = new QueryParser(Version.LUCENE_30, "data", new StandardAnalyzer(Version.LUCENE_30));
 
             SortField hitSortField = new SortField("date", SortField.LONG);
             Sort hitSort = new Sort(hitSortField);
