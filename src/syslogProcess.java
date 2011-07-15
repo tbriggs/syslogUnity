@@ -70,14 +70,14 @@ class syslogProcess implements Runnable {
             long generated = Long.parseLong(getTagValue("generated", eElement));
 
             Document doc = new Document();
-            doc.add(new Field("from", from, Field.Store.YES, Field.Index.ANALYZED));
-            doc.add(new Field("facility", facility, Field.Store.YES, Field.Index.ANALYZED));
+            doc.add(new Field("from", from, Field.Store.NO, Field.Index.ANALYZED));
+            doc.add(new Field("facility", facility, Field.Store.NO, Field.Index.ANALYZED));
             doc.add(new Field("data", msg, Field.Store.YES, Field.Index.ANALYZED));
             doc.add(new Field("hostname", hostname, Field.Store.YES, Field.Index.ANALYZED));
-            doc.add(new NumericField("priority", Field.Store.YES, true).setIntValue(priority));
-            doc.add(new Field("tag", tag, Field.Store.YES, Field.Index.ANALYZED));
-            doc.add(new Field("program", program, Field.Store.YES, Field.Index.ANALYZED));
-            doc.add(new Field("severity", severity, Field.Store.YES, Field.Index.ANALYZED));
+            doc.add(new NumericField("priority", Field.Store.NO, true).setIntValue(priority));
+            doc.add(new Field("tag", tag, Field.Store.NO, Field.Index.ANALYZED));
+            doc.add(new Field("program", program, Field.Store.NO, Field.Index.ANALYZED));
+            doc.add(new Field("severity", severity, Field.Store.NO, Field.Index.ANALYZED));
             doc.add(new NumericField("date", Field.Store.YES, true).setLongValue(generated));
 
             writer.addDocument(doc);

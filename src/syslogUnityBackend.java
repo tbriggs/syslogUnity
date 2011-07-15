@@ -19,9 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.regex.Pattern;
 
-import org.apache.lucene.analysis.miscellaneous.PatternAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.util.Version;
 import org.apache.lucene.store.FSDirectory;
@@ -32,7 +31,7 @@ class syslogUnityBackend {
     public static void main(String[] args) {
 
         final File INDEX_DIR = new File("/var/lib/syslogUnity/index");
-        final PatternAnalyzer analyzer = new PatternAnalyzer(Version.LUCENE_30, Pattern.compile("\\W+"), true, null);
+        final StandardAnalyzer analyzer = new StandardAnalyzer(Version.LUCENE_30);
         final IndexWriter writer;
 
         try {

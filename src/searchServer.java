@@ -15,7 +15,7 @@
  *     along with syslogUnity.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import org.apache.lucene.analysis.miscellaneous.PatternAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriter;
 
 import java.lang.*;
@@ -23,10 +23,10 @@ import java.net.*;
 
 class searchServer implements Runnable {
 
-    private PatternAnalyzer analyzer;
+    private StandardAnalyzer analyzer;
     private IndexWriter writer;
 
-    searchServer(IndexWriter w, PatternAnalyzer a) {
+    searchServer(IndexWriter w, StandardAnalyzer a) {
         writer = w;
         analyzer = a;
     }

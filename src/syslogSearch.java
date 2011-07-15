@@ -15,7 +15,6 @@
  *     along with syslogUnity.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import org.apache.lucene.analysis.miscellaneous.PatternAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 
 import org.apache.lucene.document.Document;
@@ -32,11 +31,11 @@ import java.net.Socket;
 
 class syslogSearch implements Runnable {
 
-    private PatternAnalyzer analyzer;
+    private StandardAnalyzer analyzer;
     private IndexWriter writer;
     private Socket searchSocket;
 
-    syslogSearch(Socket s, IndexWriter w, PatternAnalyzer a) {
+    syslogSearch(Socket s, IndexWriter w, StandardAnalyzer a) {
         writer = w;
         analyzer = a;
         searchSocket = s;
@@ -52,7 +51,7 @@ class syslogSearch implements Runnable {
             IndexReader reader = writer.getReader();
             Searcher searcher = new IndexSearcher(reader);
 
-            QueryParser indexParser = new QueryParser(Version.LUCENE_30, "data", new StandardAnalyzer(Version.LUCENE_30));
+            QueryParser indexParser = new QueryParser(Version.LUCENE_30, "data", analyzer);
 
             SortField hitSortField = new SortField("date", SortField.LONG);
             Sort hitSort = new Sort(hitSortField);
